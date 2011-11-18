@@ -1,0 +1,10 @@
+package junlas.components.piclist{
+	/**
+	 *@author lvjun01
+	 */
+	public class JLineRail{
+		public function JLineRail() {
+			
+		}
+	}
+}
