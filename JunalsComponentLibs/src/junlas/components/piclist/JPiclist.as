@@ -3,6 +3,7 @@ package junlas.components.piclist{
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Shape;
 	import flash.display.Sprite;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
 	import junlas.components.base.JComponent;
@@ -47,9 +48,10 @@ package junlas.components.piclist{
 			_itemCompose = new JItemCompose();
 			_firstShowIndex = 0;
 			_itemRadius = 0;
-			_speed = 8;
-			_pageNum = 1;
+			_speed = 0;
+			_pageNum = 0;
 			_isCircle = false;
+			addEventListener(Event.ENTER_FRAME,run);
 			setSize(320,80);
 		}
 		
@@ -63,14 +65,17 @@ package junlas.components.piclist{
 			addRawChild(_leftEndButton);
 			addRawChild(_rightButton);
 			addRawChild(_rightEndButton);
+			_rightButton.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{previousItems(3)});
 			
 			if(__debug__){
 				_debugContent = new Sprite();
 				_debugContent.name = "jpiclist_debug_content";
 				_debugContent.x = content.x;
 				_debugContent.y = content.y;
-				addRawChild(_debugContent);
+				addChildAt(_debugContent,1);
+				_debugContent.mouseChildren = _debugContent.mouseEnabled = false;
 			}
+			
 		}
 		
 		override public function setSize(w:Number,h:Number):void{
@@ -114,11 +119,17 @@ package junlas.components.piclist{
 		 * 
 		 */
 		private function drawHandle():void{
+			if(_speed<=0||_pageNum<=0||_itemRadius<=0){
+				trace("[Warning]_speed="+_speed,",_pageNme="+_pageNum,",_itemRadius="+_itemRadius);
+				return;
+			}
+			trace("[OK]_speed="+_speed,",_pageNme="+_pageNum,",_itemRadius="+_itemRadius);
 			var posArr:Vector.<mVector> = _lineRail.getPosPoints();
 			if(_isFirstShow){
-				_itemCompose.itemIndex = 0;
-				_itemCompose.handleItemsPos(posArr,_pageNum,false);
-				return;
+				_itemCompose.currItemIndex = _itemCompose.nextItemIndex = _firstShowIndex;
+				_itemCompose.handleItemsPos(posArr,_itemRadius);
+			} else{
+				_itemCompose.handleItemsPos(posArr,_itemRadius);
 			}
 		}
 		
@@ -134,6 +145,9 @@ package junlas.components.piclist{
 			for each (var dis:DisplayObject in contentArr) {
 				item = new JListItem(this.content,dis);
 				_itemCompose.push(item);
+				if(__debug__){
+					item.initDebugPmc(_debugContent);
+				}
 			}
 		}
 		
@@ -156,6 +170,7 @@ package junlas.components.piclist{
 		public function addPageNum(pageNum:int):void{
 			_pageNum = pageNum;
 			_lineRail.createSeparate(_pageNum,_itemRadius);
+			_itemCompose.setMaxItemIndex(_pageNum);
 			drawHandle();
 		}
 		
@@ -173,6 +188,7 @@ package junlas.components.piclist{
 		 */
 		public function addSpeed(speed:Number):void{
 			_speed = speed;
+			drawHandle();
 		}
 		
 		/**
@@ -188,25 +204,31 @@ package junlas.components.piclist{
 		public function reset():void{
 			
 		}
+		
+		private function run(event:Event):void {
+			_itemCompose.run();
+		}
 		//////////////////////////////////////////////////////////////////////
 		// 对外主要接口
 		//////////////////////////////////////////////////////////////////////
-		public function previous():void {
-			_isFirstShow = false;
-			
-		}
-		
-		public function next():void {
-			_isFirstShow = false;
-			
-		}
-		
 		public function previousItems(itemsNum:int = 1):void {
 			_isFirstShow = false;
-			
+			_itemCompose.updateNextItemIndex(itemsNum,_isCircle);
+			drawHandle();
+			_itemCompose.go(-_speed);
 		}
 		
 		public function nextItems(itemsNum:int = 1):void {
+			_isFirstShow = false;
+			
+		}
+		
+		public function previousEnd():void {
+			_isFirstShow = false;
+			
+		}
+		
+		public function nextEnd():void {
 			_isFirstShow = false;
 			
 		}
