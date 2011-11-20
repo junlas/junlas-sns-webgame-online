@@ -20,6 +20,7 @@ package junlas.components.piclist{
 		protected var _rightEndButton:JPushButton;
 		
 		protected var _itemsArr:Vector.<JPiclistItem>;
+		protected var _firstShowIndex:int;
 		protected var _speed:Number;
 		protected var _pageNum:int;
 		protected var _isCircle:Boolean;
@@ -71,6 +72,13 @@ package junlas.components.piclist{
 			for each (var content:DisplayObject in contentArr) {
 				item = new JPiclistItem(content);
 			}
+			
+		}
+		
+		/**
+		 * @initial 设置在第一个显示的item的索引
+		 */
+		public function addFirstShowIndex(firstShowIndex:int):void{
 			
 		}
 		
