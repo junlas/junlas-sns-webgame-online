@@ -21,7 +21,7 @@ package junlas.components.base
 		/////////////网格显示容器/////////////
 		protected var _gridShow:Sprite;
 		/////////////内容显示容器/////////////
-		public var content:Sprite;
+		protected var content:Sprite;
 		
 		public function JPanel(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0,visibleShow:Sprite = null)
 		{
