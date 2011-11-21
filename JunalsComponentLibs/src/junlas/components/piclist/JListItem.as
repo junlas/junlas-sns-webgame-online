@@ -12,6 +12,7 @@ package junlas.components.piclist{
 		/////
 		private var _pmc:Sprite;
 		internal var PosIndex:int;
+		internal var GoStep:int;
 		private var _car:JCar;
 		private var _content:DisplayObject;
 		

@@ -41,15 +41,23 @@ package junlas.components.piclist{
 		public function go(runSpeed:mVector):void {
 			var item:JListItem;
 			var index:int;
-			if(_goItemsNum > 0){
-				for (var i:int = 0; i < _moveGroup._itemArr.length; i++) {
-					item = _moveGroup._itemArr[i];
-					index = item.PosIndex-_goItemsNum < _minPosIndex?_minPosIndex:item.PosIndex-_goItemsNum;
-					TweenLite.to(item,2,{x:_moveGroup._posArr[index].x,y:_moveGroup._posArr[index].y,ease:Back.easeOut});
+			for (var i:int = 0; i < _moveGroup._itemArr.length; i++) {
+				item = _moveGroup._itemArr[i];
+				index = item.PosIndex-_currIndex-item.GoStep < _minPosIndex?_minPosIndex:item.PosIndex-_currIndex-item.GoStep;
+				trace(item.PosIndex,item.GoStep);
+				if(_goItemsNum>0){
+					if(i==_moveGroup._itemArr.length-1){
+						TweenLite.to(item,1,{x:_moveGroup._posArr[index].x,y:_moveGroup._posArr[index].y,ease:Back.easeOut,onComplete:completeFunc});
+					}else{
+						TweenLite.to(item,1,{x:_moveGroup._posArr[index].x,y:_moveGroup._posArr[index].y,ease:Back.easeOut});
+					}
+				}else{
+					if(i==0){
+						TweenLite.to(item,2,{x:_moveGroup._posArr[index].x,y:_moveGroup._posArr[index].y,ease:Back.easeOut,onComplete:completeFunc});
+					}else{
+						TweenLite.to(item,2,{x:_moveGroup._posArr[index].x,y:_moveGroup._posArr[index].y,ease:Back.easeOut});
+					}
 				}
-				
-			}else{
-			
 			}
 		}
 		
@@ -65,18 +73,20 @@ package junlas.components.piclist{
 			_moveGroup.reset();
 			_moveGroup.updatePosArr(posArr);
 			var absVal:int = MathTool.abs(_goItemsNum);
-			var normalVal:int = MathTool.normal(_goItemsNum);
 			var item:JListItem;
 			var itemPosIndex:int;
-			if(normalVal > 0){
+			var itemGoStep:int;
+			if(_goItemsNum > 0){
 				var maxIndex:int = _currIndex + _pageNum + absVal-1 <= (getLength()-1)?_currIndex + _pageNum + absVal-1:(getLength()-1);
-				for(var i:int = _currIndex;i<maxIndex;i++){
+				for(var i:int = _currIndex;i<=maxIndex;i++){
 					item = _itemsArr[i];
 					item.updateCarRadius(itemRadius);
 					itemPosIndex = i-_currIndex + 1>_maxPosIndex?_maxPosIndex:i-_currIndex + 1;
+					itemGoStep = i-_currIndex-_pageNum>0?_goItemsNum-(i-_currIndex-_pageNum):_goItemsNum;
 					item.updatePos(posArr[itemPosIndex]);
 					//itemPosIndex = itemPosIndex + _goItemsNum > _maxPosIndex ? _maxPosIndex:itemPosIndex + _goItemsNum;
 					item.PosIndex = itemPosIndex;
+					item.GoStep = itemGoStep;
 					_moveGroup.push(item);
 				}
 			}else{
@@ -92,10 +102,13 @@ package junlas.components.piclist{
 				}
 			}
 		}
+		
+		private function completeFunc():void{
+			_currIndex += _goItemsNum;
+		}
 		/**
 		 * 不做缓动效果，直接以
-		 * @param beginIndex
-		 * 这个作为起始点立即显示列表
+		 * @param beginIndex 这个作为起始点立即显示列表
 		 */
 		public function handleSolidItemsPos(beginIndex:int,posArr:Vector.<mVector>,itemRadius:Number):void{
 			_goItemsNum = 0;
