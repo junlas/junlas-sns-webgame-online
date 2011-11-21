@@ -1,6 +1,6 @@
 package junlas.components.piclist{
 	import com.greensock.TweenLite;
-	import com.greensock.easing.Elastic;
+	import com.greensock.easing.Back;
 	
 	import junlas.utils.math.MathTool;
 	import junlas.utils.math.mVector;
@@ -43,7 +43,7 @@ package junlas.components.piclist{
 			/*if(_goItemsNum > 0){
 				for (var i:int = 0; i < _moveGroup._itemArr.length; i++) {
 					item = _moveGroup._itemArr[i];
-					TweenLite.to(item,2,{x:_moveGroup._posArr[item.PosIndex].x,y:_moveGroup._posArr[item.PosIndex].y,ease:Elastic.easeOut});
+					TweenLite.to(item,2,{x:_moveGroup._posArr[item.PosIndex].x,y:_moveGroup._posArr[item.PosIndex].y,ease:Back.easeOut});
 				}
 				
 			}else{
