@@ -40,15 +40,17 @@ package junlas.components.piclist{
 		
 		public function go(runSpeed:mVector):void {
 			var item:JListItem;
-			/*if(_goItemsNum > 0){
+			var index:int;
+			if(_goItemsNum > 0){
 				for (var i:int = 0; i < _moveGroup._itemArr.length; i++) {
 					item = _moveGroup._itemArr[i];
-					TweenLite.to(item,2,{x:_moveGroup._posArr[item.PosIndex].x,y:_moveGroup._posArr[item.PosIndex].y,ease:Back.easeOut});
+					index = item.PosIndex-_goItemsNum < _minPosIndex?_minPosIndex:item.PosIndex-_goItemsNum;
+					TweenLite.to(item,2,{x:_moveGroup._posArr[index].x,y:_moveGroup._posArr[index].y,ease:Back.easeOut});
 				}
 				
 			}else{
 			
-			}*/
+			}
 		}
 		
 		public function updateNextItemIndex(itemsNum:int,isCircle:Boolean):void {
@@ -73,9 +75,8 @@ package junlas.components.piclist{
 					item.updateCarRadius(itemRadius);
 					itemPosIndex = i-_currIndex + 1>_maxPosIndex?_maxPosIndex:i-_currIndex + 1;
 					item.updatePos(posArr[itemPosIndex]);
-					itemPosIndex = itemPosIndex + _goItemsNum > _maxPosIndex ? _maxPosIndex:itemPosIndex + _goItemsNum;
+					//itemPosIndex = itemPosIndex + _goItemsNum > _maxPosIndex ? _maxPosIndex:itemPosIndex + _goItemsNum;
 					item.PosIndex = itemPosIndex;
-					trace(item.PosIndex);
 					_moveGroup.push(item);
 				}
 			}else{
@@ -85,7 +86,7 @@ package junlas.components.piclist{
 					item.updateCarRadius(itemRadius);
 					itemPosIndex = i-minIndex+1<_minPosIndex?_minPosIndex:i-minIndex+1;
 					item.updatePos(posArr[itemPosIndex]);
-					itemPosIndex = itemPosIndex + _goItemsNum < _minPosIndex ? _minPosIndex : itemPosIndex + _goItemsNum;
+					//itemPosIndex = itemPosIndex + _goItemsNum < _minPosIndex ? _minPosIndex : itemPosIndex + _goItemsNum;
 					item.PosIndex = itemPosIndex;
 					_moveGroup.push(item);
 				}
