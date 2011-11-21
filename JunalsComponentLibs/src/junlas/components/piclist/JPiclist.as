@@ -65,7 +65,7 @@ package junlas.components.piclist{
 			addRawChild(_leftEndButton);
 			addRawChild(_rightButton);
 			addRawChild(_rightEndButton);
-			_rightButton.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{previousItems(3)});
+			_rightButton.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{nextItems(3)});
 			
 			if(__debug__){
 				_debugContent = new Sprite();
@@ -126,10 +126,9 @@ package junlas.components.piclist{
 			trace("[OK]_speed="+_speed,",_pageNme="+_pageNum,",_itemRadius="+_itemRadius);
 			var posArr:Vector.<mVector> = _lineRail.getPosPoints();
 			if(_isFirstShow){
-				_itemCompose.currItemIndex = _itemCompose.nextItemIndex = _firstShowIndex;
-				_itemCompose.handleItemsPos(posArr,_itemRadius);
+				_itemCompose.handleSolidItemsPos(_firstShowIndex,posArr,_itemRadius);
 			} else{
-				_itemCompose.handleItemsPos(posArr,_itemRadius);
+				_itemCompose.handleMoveItemsPos(posArr,_itemRadius);
 			}
 		}
 		
@@ -209,18 +208,24 @@ package junlas.components.piclist{
 			_itemCompose.run();
 		}
 		//////////////////////////////////////////////////////////////////////
-		// 对外主要接口
+		// 对外主要接口1,2,3,4个函数
 		//////////////////////////////////////////////////////////////////////
 		public function previousItems(itemsNum:int = 1):void {
 			_isFirstShow = false;
-			_itemCompose.updateNextItemIndex(itemsNum,_isCircle);
+			_itemCompose.updateNextItemIndex(-itemsNum,_isCircle);
 			drawHandle();
-			_itemCompose.go(-_speed);
+			var speedVect:mVector = _lineRail.distanceBetweenPoints.clone();
+			speedVect.length = _speed;
+			_itemCompose.go(speedVect);
 		}
 		
 		public function nextItems(itemsNum:int = 1):void {
 			_isFirstShow = false;
-			
+			_itemCompose.updateNextItemIndex(itemsNum,_isCircle);
+			drawHandle();
+			var speedVect:mVector = _lineRail.distanceBetweenPoints.clone();
+			speedVect.length = -_speed;
+			_itemCompose.go(speedVect);
 		}
 		
 		public function previousEnd():void {

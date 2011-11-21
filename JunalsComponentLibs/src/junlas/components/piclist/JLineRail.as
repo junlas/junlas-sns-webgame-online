@@ -12,11 +12,13 @@ package junlas.components.piclist{
 		//////////////////
 		private var _start:mVector;
 		private var _end:mVector;
+		private var _betweenPointsVector:mVector;
 		private var _separatePoints:Vector.<mVector>;
 		
 		public function JLineRail(start:mVector,end:mVector) {
 			_start = start;
 			_end = end;
+			_betweenPointsVector = _end.minus(_start);
 			_separatePoints = new Vector.<mVector>();
 		}
 		
@@ -24,24 +26,16 @@ package junlas.components.piclist{
 		 * 创建分割点
 		 */
 		public function createSeparate(pageNum:int,itemRadius:Number):void {
-			var isHorizontal:Boolean;
-			if(_start.y == _end.y){//横向的list
-				isHorizontal = true;
-				_start.x -= itemRadius;
-				_end.x += itemRadius;
-			} else if(_start.x == _end.x){//竖向的list
-				isHorizontal = false;
-				_start.y -= itemRadius;
-				_end.y += itemRadius;
+			var directionVect:mVector = _end.minus(_start);
+			directionVect.length = itemRadius;
+			_start.plusEquals(directionVect.mult(-1));
+			_end.plusEquals(directionVect);
+			var distanceBetweenPoints:Number = _end.distance(_start) / (pageNum + 1);
+			for(var i:int = 0;i <= (pageNum+1);i++) {
+				directionVect.length = distanceBetweenPoints*i;
+				_separatePoints[i] = _start.plus(directionVect);
 			}
-			var unitDis:Number = _end.distance(_start) / (pageNum + 1);
-			for(var i:int = 0;i <= (pageNum+1);i++){
-				if(isHorizontal){
-					_separatePoints[i] = _start.plus(new mVector(i*unitDis));
-				}else{
-					_separatePoints[i] = _start.plus(new mVector(0,i*unitDis));
-				}
-			}
+			_betweenPointsVector.length = distanceBetweenPoints;
 			drawSeparate();
 		}
 		
@@ -78,6 +72,10 @@ package junlas.components.piclist{
 			return _separatePoints;
 		}
 		
+		public function get distanceBetweenPoints():mVector {
+			return _betweenPointsVector;
+		}
+		
 		public function removeDebugRelation():void{
 			if(_debugLineContent){
 				_debugLineContent.graphics.clear();
@@ -88,9 +86,13 @@ package junlas.components.piclist{
 			_debugLineContent = null;
 		}
 		
+		/**
+		 * 销毁操作
+		 */
 		public function destroy():void {
 			removeDebugRelation();
 			
 		}
+
 	}
 }

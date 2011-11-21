@@ -11,6 +11,7 @@ package junlas.components.piclist{
 	 */
 	public class JCar{
 		private var _debugMC:Sprite;
+		private var _debugTF:TextField;
 		/////
 		private var _postion:mVector;
 		private var _radius:Number;
@@ -20,11 +21,12 @@ package junlas.components.piclist{
 			_radius = radius;
 			if(JPiclist.__debug__){
 				_debugMC = new Sprite();
-				var tf:TextField = new TextField();
-				tf.text = "radius"+_radius;
-				tf.x = -tf.textWidth>>1;
-				tf.selectable = false;
-				_debugMC.addChild(tf);
+				_debugTF = new TextField();
+				_debugTF.text = "radius"+_radius;
+				_debugTF.x = -_debugTF.textWidth>>1;
+				_debugTF.selectable = false;
+				_debugTF.width = _debugTF.height = 18;
+				_debugMC.addChild(_debugTF);
 			}
 		}
 		
@@ -42,6 +44,7 @@ package junlas.components.piclist{
 		
 		public function set radius(value:Number):void {
 			_radius = value;
+			_debugTF.text = "radius"+_radius;
 		}
 		
 		public function getDebugMc():Sprite {

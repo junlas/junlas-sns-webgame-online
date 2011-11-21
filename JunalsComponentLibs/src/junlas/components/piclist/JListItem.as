@@ -11,6 +11,7 @@ package junlas.components.piclist{
 		private var _debugItemContent:Sprite; 
 		/////
 		private var _pmc:Sprite;
+		internal var PosIndex:int;
 		private var _car:JCar;
 		private var _content:DisplayObject;
 		
@@ -20,7 +21,7 @@ package junlas.components.piclist{
 			_car = new JCar(0,0);
 		}
 		
-		public function updateCar(itemRadius:Number):void {
+		public function updateCarRadius(itemRadius:Number):void {
 			_car.radius = itemRadius;
 		}
 		
@@ -34,6 +35,22 @@ package junlas.components.piclist{
 				debugMC = _car.getDebugMc();
 				_debugItemContent.addChild(debugMC);
 			}
+		}
+		
+		public function get x():Number{
+			return _car.postion.x;
+		}
+		
+		public function set x(val:Number):void{
+			updatePos(new mVector(val,_car.postion.y));
+		}
+		
+		public function get y():Number{
+			return _car.postion.y;
+		}
+		
+		public function set y(val:Number):void{
+			updatePos(new mVector(_car.postion.x,val));
 		}
 		
 		public function pos():mVector{
