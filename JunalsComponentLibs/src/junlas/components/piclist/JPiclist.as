@@ -228,6 +228,7 @@ package junlas.components.piclist{
 			_maxIndex = _dataInfo._pageNum - 1;
 			_maxIndex = _dataInfo._contentArr.length > _maxIndex ? _maxIndex:(_dataInfo._contentArr.length - 1);
 			wellCheckPos();
+			_goDirection = null;
 		}
 		
 		private function checkNextEnd():void{
@@ -236,6 +237,7 @@ package junlas.components.piclist{
 			_maxIndex = _dataInfo._contentArr.length - 1;
 			_maxIndex = _maxIndex >= _minIndex ? _maxIndex:_minIndex;
 			wellCheckPos();
+			_goDirection = null;
 		}
 		
 		//////////////////////////////////////////////////////////////////////
