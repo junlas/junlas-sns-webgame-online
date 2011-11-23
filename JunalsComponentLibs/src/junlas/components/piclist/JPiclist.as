@@ -17,12 +17,14 @@ package junlas.components.piclist{
 	 */
 	public class JPiclist extends JPanel {
 		public static var __debug__:Boolean = false;
+		private var _debugContent:Sprite;
+		
 		protected var _leftButton:JPushButton;
 		protected var _rightButton:JPushButton;
 		protected var _leftEndButton:JPushButton;
 		protected var _rightEndButton:JPushButton;
+		
 		protected var _isFirstShow:Boolean = true;
-		private var _debugContent:Sprite;
 		
 		////////////////////
 		public static const HORIZONTAL:String = "horizontal";
@@ -30,8 +32,7 @@ package junlas.components.piclist{
 		//标识：横向 or 竖向
 		private var _direction:String;
 		private var _lineRail:JLineRail;
-		
-		protected var _itemCompose:JItemCompose;
+		////参数信息///
 		protected var _firstShowIndex:int;
 		protected var _itemRadius:Number;
 		protected var _speed:Number;
@@ -45,7 +46,6 @@ package junlas.components.piclist{
 		
 		override protected function init():void{
 			super.init();
-			_itemCompose = new JItemCompose();
 			_firstShowIndex = 0;
 			_itemRadius = 0;
 			_speed = 0;
@@ -66,6 +66,7 @@ package junlas.components.piclist{
 			addRawChild(_rightButton);
 			addRawChild(_rightEndButton);
 			_rightButton.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{nextItems(3)});
+			_leftButton.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{previousItems(3)});
 			
 			if(__debug__){
 				_debugContent = new Sprite();
@@ -124,12 +125,8 @@ package junlas.components.piclist{
 				return;
 			}
 			trace("[OK]_speed="+_speed,",_pageNme="+_pageNum,",_itemRadius="+_itemRadius);
-			var posArr:Vector.<mVector> = _lineRail.getPosPoints();
-			if(_isFirstShow){
-				_itemCompose.handleSolidItemsPos(_firstShowIndex,posArr,_itemRadius);
-			} else{
-				_itemCompose.handleMoveItemsPos(posArr,_itemRadius);
-			}
+			
+			
 		}
 		
 		
@@ -140,24 +137,24 @@ package junlas.components.piclist{
 		 * @initial 添加元素数组到Piclist中
 		 */
 		public function addPush(contentArr:Vector.<DisplayObject>):void {
-			var item:JListItem;
+			/*var item:JListItem;
 			for each (var dis:DisplayObject in contentArr) {
 				item = new JListItem(this.content,dis);
 				_itemCompose.push(item);
 				if(__debug__){
 					item.initDebugPmc(_debugContent);
 				}
-			}
+			}*/
 		}
 		
 		/**
 		 * @initial 设置在第一个显示的item的索引
 		 */
 		public function addFirstShowIndex(firstShowIndex:int):void{
-			if(firstShowIndex <0 || firstShowIndex >= _itemCompose.getLength()){
+			/*if(firstShowIndex <0 || firstShowIndex >= _itemCompose.getLength()){
 				throw new ArgumentError("起始显示的索引不在范围之内,请检查");
 				return;
-			}
+			}*/
 			_firstShowIndex = firstShowIndex;
 			_isFirstShow = true;
 			drawHandle();
@@ -169,7 +166,6 @@ package junlas.components.piclist{
 		public function addPageNum(pageNum:int):void{
 			_pageNum = pageNum;
 			_lineRail.createSeparate(_pageNum,_itemRadius);
-			_itemCompose.setMaxItemIndex(_pageNum);
 			drawHandle();
 		}
 		
@@ -205,27 +201,18 @@ package junlas.components.piclist{
 		}
 		
 		private function run(event:Event):void {
-			_itemCompose.run();
 		}
 		//////////////////////////////////////////////////////////////////////
 		// 对外主要接口1,2,3,4个函数
 		//////////////////////////////////////////////////////////////////////
 		public function previousItems(itemsNum:int = 1):void {
 			_isFirstShow = false;
-			_itemCompose.updateNextItemIndex(-itemsNum,_isCircle);
 			drawHandle();
-			var speedVect:mVector = _lineRail.distanceBetweenPoints.clone();
-			speedVect.length = _speed;
-			_itemCompose.go(speedVect);
 		}
 		
 		public function nextItems(itemsNum:int = 1):void {
 			_isFirstShow = false;
-			_itemCompose.updateNextItemIndex(itemsNum,_isCircle);
 			drawHandle();
-			var speedVect:mVector = _lineRail.distanceBetweenPoints.clone();
-			speedVect.length = -_speed;
-			_itemCompose.go(speedVect);
 		}
 		
 		public function previousEnd():void {

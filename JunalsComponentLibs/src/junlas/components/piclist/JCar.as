@@ -22,7 +22,7 @@ package junlas.components.piclist{
 			if(JPiclist.__debug__){
 				_debugMC = new Sprite();
 				_debugTF = new TextField();
-				_debugTF.text = "radius"+_radius;
+				_debugTF.text = "r:"+_radius;
 				_debugTF.x = -_debugTF.textWidth>>1;
 				_debugTF.selectable = false;
 				_debugTF.width = _debugTF.height = 18;
@@ -44,7 +44,7 @@ package junlas.components.piclist{
 		
 		public function set radius(value:Number):void {
 			_radius = value;
-			_debugTF.text = "radius"+_radius;
+			_debugTF.text = "r:"+_radius;
 		}
 		
 		public function getDebugMc():Sprite {
