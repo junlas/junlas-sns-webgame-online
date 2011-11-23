@@ -68,8 +68,10 @@ package junlas.components.piclist{
 			addRawChild(_leftEndButton);
 			addRawChild(_rightButton);
 			addRawChild(_rightEndButton);
-			_rightButton.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{nextItems(3)});
+			_rightButton.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{nextItems(4)});
 			_leftButton.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{previousItems(3)});
+			_rightEndButton.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{nextEnd()});
+			_leftEndButton.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{previousEnd()});
 			
 			if(__debug__){
 				_debugContent = new Sprite();
@@ -119,15 +121,27 @@ package junlas.components.piclist{
 		}
 		
 		private function drawHandle():void{
-			var tweenArr:Vector.<JItem> = _dataInfo._contentArr.slice(_dataInfo._firstShowIndex,_dataInfo._firstShowIndex+_dataInfo._pageNum);
-			checkPos(tweenArr);
+			_minIndex = _dataInfo._firstShowIndex;
+			_maxIndex = _dataInfo._firstShowIndex+_dataInfo._pageNum - 1;
+			wellCheckPos();
+		}
+		
+		/**
+		 * 精确卸载
+		 */
+		private function wellUploadPos():void{
+			var tweenArr:Vector.<JItem> = _dataInfo._contentArr.slice(_minIndex,_maxIndex+1);
+			for(var i:int = 0;i<tweenArr.length;i++){
+				var item:JItem = tweenArr[i];
+				item.stopUpdatePos();
+			}
 		}
 		
 		/**
 		 * 精确定位
 		 */
-		private function checkPos(tweenArr:Vector.<JItem>):void{
-			_minIndex = tweenArr[0].getItsIndex();
+		private function wellCheckPos():void{
+			var tweenArr:Vector.<JItem> = _dataInfo._contentArr.slice(_minIndex,_maxIndex+1);
 			for(var i:int = 0;i<tweenArr.length;i++){
 				var distance:mVector = _lineRail.distanceInFact.clone();
 				distance.length *= i;
@@ -135,7 +149,6 @@ package junlas.components.piclist{
 				var item:JItem = tweenArr[i];
 				item.updatePos(pos);
 			}
-			_maxIndex = item.getItsIndex();
 		}
 		
 		/**
@@ -151,33 +164,78 @@ package junlas.components.piclist{
 		private function run(event:Event):void {
 			switch(_goDirection){
 				case "previous":
-					
+					checkPrevious();
 					break;
 				case "next":
 					checkNext();
 					break;
 				case "previousEnd":
-					
+					checkPreviousEnd();
 					break;
 				case "nextEnd":
-					
+					checkNextEnd();
 					break;
 				default:
 					break;
 			}
 		}
 		
+		private function checkPrevious():void{
+			var minItemPos:mVector = _dataInfo._contentArr[_minIndex].getPos().clone();
+			minItemPos.rotateAngleEquals(-_lineRail.startPosInFactPoint.angle);
+			var maxItemPos:mVector = _dataInfo._contentArr[_maxIndex].getPos().clone();
+			maxItemPos.rotateAngleEquals(-_lineRail.posRightPoint.angle);
+			if(maxItemPos.y <=0){
+				_dataInfo._contentArr[_maxIndex].stopUpdatePos();
+				_maxIndex--;
+			}
+			if(minItemPos.y <=0){
+				_goDirection = null;
+				wellCheckPos();
+				return;
+			}
+			var item:JItem;
+			for(var i:int = _minIndex;i<=_maxIndex;i++){
+				item = _dataInfo._contentArr[i];
+				item.go(_dataInfo.speedVector);
+			}
+		}
+		
 		private function checkNext():void{
 			var maxItemPos:mVector = _dataInfo._contentArr[_maxIndex].getPos().clone();
-			maxItemPos.angle += _lineRail.endPosInFactPoint.angle;
-			trace(maxItemPos.y);
-			if(maxItemPos.y<=0)return;
-			//这里做好做一次检验坐标......先保留，迟会做
+			maxItemPos.rotateAngleEquals(-_lineRail.endPosInFactPoint.angle);
+			var minItemPos:mVector = _dataInfo._contentArr[_minIndex].getPos().clone();
+			minItemPos.rotateAngleEquals(-_lineRail.posLeftPoint.angle);
+			if(minItemPos.y >=0){
+				_dataInfo._contentArr[_minIndex].stopUpdatePos();
+				_minIndex++;
+			}
+			if(maxItemPos.y>=0){
+				_goDirection = null;
+				wellCheckPos();
+				return;
+			}
 			var item:JItem;
 			for(var i:int = _minIndex;i<=_maxIndex;i++){
 				item = _dataInfo._contentArr[i];
 				item.go(_dataInfo.speedNegateVector);
 			}
+		}
+		
+		private function checkPreviousEnd():void{
+			wellUploadPos();
+			_minIndex = 0;
+			_maxIndex = _dataInfo._pageNum - 1;
+			_maxIndex = _dataInfo._contentArr.length > _maxIndex ? _maxIndex:(_dataInfo._contentArr.length - 1);
+			wellCheckPos();
+		}
+		
+		private function checkNextEnd():void{
+			wellUploadPos();
+			_minIndex = _dataInfo._contentArr.length - _dataInfo._pageNum;
+			_maxIndex = _dataInfo._contentArr.length - 1;
+			_maxIndex = _maxIndex >= _minIndex ? _maxIndex:_minIndex;
+			wellCheckPos();
 		}
 		
 		//////////////////////////////////////////////////////////////////////
@@ -245,13 +303,58 @@ package junlas.components.piclist{
 		 * 重置Piclist
 		 */
 		public function reset():void{
-			
+			drawHandle();
+		}
+		
+		/**
+		 * 删除PicList中的某一个显示Item(效率不高，不建议频繁调用)
+		 */
+		public function deleteByItem(item:DisplayObject):void{
+			for(var i:int = _dataInfo._contentArr.length - 1;i>=0;i--){
+				var itemObj:JItem = _dataInfo._contentArr[i];
+				if(itemObj.child == item){
+					_dataInfo._contentArr.splice(i,1);
+					itemObj.destroy();
+					break;
+				}
+			}
+			if(i >= 0){
+				if(i < _minIndex){
+					_minIndex--;
+					_maxIndex--;
+				}
+			}
+			wellCheckPos();
+		}
+		
+		/**
+		 * 删除PicList中的某一个显示Item(效率不高，不建议频繁调用)
+		 */
+		public function deleteByIndex(index:int):void{
+			if(!(index >= 0 && index < _dataInfo._contentArr.length)) {
+				return;
+			}
+			var itemObj :JItem = _dataInfo._contentArr.splice(index,1)[0] as JItem;
+			itemObj.destroy();
+			if(index >= 0){
+				if(index < _minIndex){
+					_minIndex--;
+					_maxIndex--;
+				}
+			}
+			wellCheckPos();
 		}
 		//////////////////////////////////////////////////////////////////////
 		// 对外主要接口1,2,3,4个函数
 		//////////////////////////////////////////////////////////////////////
 		public function previousItems(itemsNum:int = 1):void {
-			
+			var index:int = _minIndex - 1;
+			for(var i:int = index;(i>index-itemsNum) && (i >= 0);i--){
+				var item:JItem = _dataInfo._contentArr[i];
+				item.updatePos(_dataInfo._contentArr[_minIndex].getPos().plus(_lineRail.distanceNegateInFact));
+				_minIndex = i;
+			}
+			_goDirection = "previous";
 		}
 		
 		public function nextItems(itemsNum:int = 1):void {
@@ -265,18 +368,24 @@ package junlas.components.piclist{
 		}
 		
 		public function previousEnd():void {
-			
+			_goDirection = "previousEnd";
 		}
 		
 		public function nextEnd():void {
-			
+			_goDirection = "nextEnd";
 		}
 		
 		/**
 		 * 销毁
 		 */
 		override public function destroy():void {
-			
+			removeEventListener(Event.ENTER_FRAME,run);
+			_dataInfo.destroy();
+			_dataInfo = null;
+			_lineRail.destroy();
+			_lineRail = null;
+			this.content.removeChild(_pmc);
+			super.destroy();
 		}
 		
 	}

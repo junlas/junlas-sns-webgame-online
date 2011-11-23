@@ -18,8 +18,9 @@ package junlas.components.piclist{
 		private var _posRightPoint:mVector;
 		private var _startPosInFactPoint:mVector;
 		private var _endPosInFactPoint:mVector;
-		///连续的两个点间向量////
+		///连续的两个点间向量与其反向量////
 		private var _distanceInFact:mVector;
+		private var _distanceNegateInFact:mVector;
 		
 		private var _radiusVector:mVector;
 		///起点与终点间向量///
@@ -51,6 +52,7 @@ package junlas.components.piclist{
 			
 			_distanceInFact = _endPosInFactPoint.minus(_startPosInFactPoint);
 			_distanceInFact.length = _distanceInFact.length / (_dataInfo._pageNum-1);
+			_distanceNegateInFact = _distanceInFact.negate();
 		}
 		
 		public function drawDebug(content:Sprite):void {
@@ -83,11 +85,6 @@ package junlas.components.piclist{
 				_debugLineContent.graphics.beginFill(0xffcc00);
 				_debugLineContent.graphics.drawCircle(_endPosInFactPoint.x,_endPosInFactPoint.y,5);
 				_debugLineContent.graphics.endFill();
-				/*for each (var p:mVector in _separatePoints) {
-				_debugLineContent.graphics.beginFill(0xaabbcc);
-				_debugLineContent.graphics.drawCircle(p.x,p.y,5);
-				_debugLineContent.graphics.endFill();
-				}*/
 			}
 		}
 		
@@ -106,7 +103,7 @@ package junlas.components.piclist{
 		 */
 		public function destroy():void {
 			removeDebugRelation();
-			
+			_dataInfo = null;
 		}
 
 		/**
@@ -128,6 +125,13 @@ package junlas.components.piclist{
 		 */
 		public function get distanceInFact():mVector {
 			return _distanceInFact;
+		}
+		
+		/**
+		* 距离反向量
+		*/
+		public function get distanceNegateInFact():mVector {
+			return _distanceNegateInFact;
 		}
 
 		/**

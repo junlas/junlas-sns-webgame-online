@@ -31,6 +31,5 @@ package junlas.components.piclist{
 		public function set pos(pos:mVector):void{
 			_pos = pos;
 		}
-
 	}
 }

@@ -43,10 +43,6 @@ package junlas.components.piclist{
 			_car.myIndex = index;
 		}
 		
-		public function getItsIndex():int{
-			return _car.myIndex;
-		}
-		
 		public function getPos():mVector {
 			return _car.pos;
 		}
@@ -62,13 +58,37 @@ package junlas.components.piclist{
 				_debugChild.x = _car.pos.x;
 				_debugChild.y = _car.pos.y;
 			}
+			/*if(!_pmc.contains(_child)){
+				_pmc.addChild(_child);
+			}*/
+			_child.x = _car.pos.x;
+			_child.y = _car.pos.y;
 		}
 		
 		public function stopUpdatePos():void {
 			if(JPiclist.__debug__){
 				_debugPmc.removeChild(_debugChild);
 			}
+			if(_pmc.contains(_child)){
+				_pmc.removeChild(_child);
+			}
 		}
+
+		public function get child():DisplayObject {
+			return _child;
+		}
+
 		
+		public function destroy():void {
+			if(JPiclist.__debug__){
+				_debugChild.parent && _debugPmc.removeChild(_debugChild);
+			}
+			_debugPmc = null;
+			_debugChild = null;
+			_child.parent && _pmc.removeChild(_child);
+			_pmc = null;
+			_child = null;
+			_car = null;
+		}
 	}
 }

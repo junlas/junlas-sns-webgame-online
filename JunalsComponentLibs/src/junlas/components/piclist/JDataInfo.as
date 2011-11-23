@@ -14,12 +14,14 @@ package junlas.components.piclist{
 		internal var _isCircle:Boolean;
 		//一次缓动设置移动的数目//
 		internal var _tweenItemNumAtOnce:int = 1;
-		///速度向量///
+		///速度向量与其反向量 ///
 		private var _speedVector:mVector;
+		private var _speedNegateVector:mVector;
 		
 		public function calculateSpeedVect(betweenPointsVector:mVector):void{
 			_speedVector = betweenPointsVector.clone();
 			_speedVector.length = _speed;
+			_speedNegateVector = _speedVector.negate();
 		}
 		
 		///速度向量///
@@ -29,8 +31,14 @@ package junlas.components.piclist{
 		
 		///速度反向量///
 		public function get speedNegateVector():mVector {
-			return _speedVector.negate();
+			return _speedNegateVector;
 		}
 
+		public function destroy():void {
+			for each (var item:JItem in _contentArr) {
+				item.destroy();
+			}
+			_contentArr = null;
+		}
 	}
 }
