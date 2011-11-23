@@ -10,51 +10,26 @@ package junlas.components.piclist{
 	 *@author lvjun01
 	 */
 	public class JCar{
-		private var _debugMC:Sprite;
-		private var _debugTF:TextField;
-		/////
-		private var _postion:mVector;
-		private var _radius:Number;
+		private var _myIndex:int;
+		private var _pos:mVector;
 		
 		public function JCar(xpos:Number = 0,ypos:Number = 0,radius:Number = 0) {
-			_postion = new mVector(xpos,ypos);
-			_radius = radius;
-			if(JPiclist.__debug__){
-				_debugMC = new Sprite();
-				_debugTF = new TextField();
-				_debugTF.text = "r:"+_radius;
-				_debugTF.x = -_debugTF.textWidth>>1;
-				_debugTF.selectable = false;
-				_debugTF.width = _debugTF.height = 18;
-				_debugMC.addChild(_debugTF);
-			}
 		}
 		
-		public function get postion():mVector{
-			return _postion;
+		public function get myIndex():int{
+			return _myIndex;
 		}
 		
-		public function set postion(pos:mVector):void{
-			_postion = pos;
+		public function set myIndex(index:int):void{
+			_myIndex = index;
 		}
 		
-		public function get radius():Number {
-			return _radius;
+		public function get pos():mVector{
+			return _pos;
 		}
 		
-		public function set radius(value:Number):void {
-			_radius = value;
-			_debugTF.text = "r:"+_radius;
-		}
-		
-		public function getDebugMc():Sprite {
-			_debugMC.graphics.clear();
-			_debugMC.graphics.beginFill(0x66ff00,.3);
-			_debugMC.graphics.drawCircle(0,0,_radius);
-			_debugMC.graphics.endFill();
-			_debugMC.x = _postion.x;
-			_debugMC.y = _postion.y;
-			return _debugMC;
+		public function set pos(pos:mVector):void{
+			_pos = pos;
 		}
 
 	}

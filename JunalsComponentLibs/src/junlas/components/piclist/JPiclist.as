@@ -18,26 +18,24 @@ package junlas.components.piclist{
 	public class JPiclist extends JPanel {
 		public static var __debug__:Boolean = false;
 		private var _debugContent:Sprite;
+		private var _pmc:Sprite;
+		////参数信息///
+		protected var _dataInfo:JDataInfo;
+		private var _lineRail:JLineRail;
 		
 		protected var _leftButton:JPushButton;
 		protected var _rightButton:JPushButton;
 		protected var _leftEndButton:JPushButton;
 		protected var _rightEndButton:JPushButton;
 		
-		protected var _isFirstShow:Boolean = true;
-		
-		////////////////////
+		///////////横向、纵向2个常量定义/////////
 		public static const HORIZONTAL:String = "horizontal";
 		public static const VERTICAL:String = "vertical";
 		//标识：横向 or 竖向
 		private var _direction:String;
-		private var _lineRail:JLineRail;
-		////参数信息///
-		protected var _firstShowIndex:int;
-		protected var _itemRadius:Number;
-		protected var _speed:Number;
-		protected var _pageNum:int;
-		protected var _isCircle:Boolean;
+		/////////////////////////////
+		private var _minIndex:int;
+		private var _maxIndex:int;
 		
 		public function JPiclist(parent:DisplayObjectContainer=null, xpos:Number=0, ypos:Number=0,direction:String = "horizontal", visibleShow:Sprite=null) {
 			_direction = direction;
@@ -46,11 +44,16 @@ package junlas.components.piclist{
 		
 		override protected function init():void{
 			super.init();
-			_firstShowIndex = 0;
-			_itemRadius = 0;
-			_speed = 0;
-			_pageNum = 0;
-			_isCircle = false;
+			_pmc = new Sprite();
+			this.content.addChild(_pmc);
+			_dataInfo = new JDataInfo();
+			_dataInfo._contentArr = new Vector.<JItem>();
+			_dataInfo._firstShowIndex = 0;
+			_dataInfo._itemRadius = 1;
+			_dataInfo._speed = 2;
+			_dataInfo._pageNum = 4;
+			_dataInfo._betweenSidesDist = 10;
+			_dataInfo._isCircle = false;
 			addEventListener(Event.ENTER_FRAME,run);
 			setSize(320,80);
 		}
@@ -79,9 +82,14 @@ package junlas.components.piclist{
 			
 		}
 		
-		override public function setSize(w:Number,h:Number):void{
-			super.setSize(w,h);
-			createRails();
+		override public function draw():void{
+			super.draw();
+			
+			_rightButton.x = width + 20;
+			_leftEndButton.y = height - 20;
+			_rightEndButton.x = width + 20;
+			_rightEndButton.y = height - 20;
+			
 		}
 		
 		private function createRails():void {
@@ -100,97 +108,137 @@ package junlas.components.piclist{
 					break;
 				}
 			}
-			_lineRail = new JLineRail(start,end);
+			_lineRail = new JLineRail(start,end,_dataInfo);
 			if(__debug__){
-				_lineRail.drawLine(_debugContent);
+				_lineRail.drawDebug(_debugContent);
 			}
 		}
 		
-		override public function draw():void{
-			super.draw();
-			
-			_rightButton.x = width + 20;
-			_leftEndButton.y = height - 20;
-			_rightEndButton.x = width + 20;
-			_rightEndButton.y = height - 20;
-			
+		private function calculateSpeed():void{
+			_dataInfo.calculateSpeedVect(_lineRail.betweenPointsVector);
+		}
+		
+		private function drawHandle():void{
+			var tweenArr:Vector.<JItem> = _dataInfo._contentArr.slice(_dataInfo._firstShowIndex,_dataInfo._firstShowIndex+_dataInfo._pageNum);
+			checkPos(tweenArr);
 		}
 		
 		/**
-		 * 
+		 * 精确定位
 		 */
-		private function drawHandle():void{
-			if(_speed<=0||_pageNum<=0||_itemRadius<=0){
-				trace("[Warning]_speed="+_speed,",_pageNme="+_pageNum,",_itemRadius="+_itemRadius);
-				return;
+		private function checkPos(tweenArr:Vector.<JItem>):void{
+			_minIndex = tweenArr[0].getItsIndex();
+			for(var i:int = 0;i<tweenArr.length;i++){
+				var distance:mVector = _lineRail.distanceInFact.clone();
+				distance.length *= i;
+				var pos:mVector = _lineRail.startPosInFactPoint.plus(distance);
+				var item:JItem = tweenArr[i];
+				item.updatePos(pos);
 			}
-			trace("[OK]_speed="+_speed,",_pageNme="+_pageNum,",_itemRadius="+_itemRadius);
-			
-			
+			_maxIndex = item.getItsIndex();
 		}
 		
+		/**
+		 * 开始启动
+		 */
+		public function start():void{
+			createRails();
+			calculateSpeed();
+			drawHandle();
+		}
+		
+		private var _goDirection:String;
+		private function run(event:Event):void {
+			switch(_goDirection){
+				case "previous":
+					
+					break;
+				case "next":
+					checkNext();
+					break;
+				case "previousEnd":
+					
+					break;
+				case "nextEnd":
+					
+					break;
+				default:
+					break;
+			}
+		}
+		
+		private function checkNext():void{
+			var maxItemPos:mVector = _dataInfo._contentArr[_maxIndex].getPos().clone();
+			maxItemPos.angle += _lineRail.endPosInFactPoint.angle;
+			trace(maxItemPos.y);
+			if(maxItemPos.y<=0)return;
+			//这里做好做一次检验坐标......先保留，迟会做
+			var item:JItem;
+			for(var i:int = _minIndex;i<=_maxIndex;i++){
+				item = _dataInfo._contentArr[i];
+				item.go(_dataInfo.speedNegateVector);
+			}
+		}
 		
 		//////////////////////////////////////////////////////////////////////
 		// 内部初始化构造需要设置的一些参数信息
 		//////////////////////////////////////////////////////////////////////
 		/**
-		 * @initial 添加元素数组到Piclist中
+		 * 添加元素数组到Piclist中
 		 */
-		public function addPush(contentArr:Vector.<DisplayObject>):void {
-			/*var item:JListItem;
-			for each (var dis:DisplayObject in contentArr) {
-				item = new JListItem(this.content,dis);
-				_itemCompose.push(item);
-				if(__debug__){
+		public function setPushData(contentArr:Vector.<DisplayObject>):void {
+			var transContentArr:Vector.<JItem> = _dataInfo._contentArr;
+			var item:JItem;
+			for each(var dis:DisplayObject in contentArr){
+				item = new JItem(_pmc,dis);
+				transContentArr.push(item);
+				item.setItsIndex(transContentArr.indexOf(item));
+				if(__debug__) {
 					item.initDebugPmc(_debugContent);
 				}
-			}*/
+			}
+		}
+		
+		/** 
+		 * 设置在第一个显示的item的索引
+		 */
+		public function setFirstShowIndex(firstShowIndex:int):void{
+			_dataInfo._firstShowIndex = firstShowIndex;
 		}
 		
 		/**
-		 * @initial 设置在第一个显示的item的索引
+		 * 滚动栏一页需要显示的数目
 		 */
-		public function addFirstShowIndex(firstShowIndex:int):void{
-			/*if(firstShowIndex <0 || firstShowIndex >= _itemCompose.getLength()){
-				throw new ArgumentError("起始显示的索引不在范围之内,请检查");
-				return;
-			}*/
-			_firstShowIndex = firstShowIndex;
-			_isFirstShow = true;
-			drawHandle();
+		public function setPageNum(pageNum:int):void{
+			_dataInfo._pageNum = pageNum;
 		}
 		
 		/**
-		 * @initial 滚动栏一页需要显示的数目
+		 * 设置半径
 		 */
-		public function addPageNum(pageNum:int):void{
-			_pageNum = pageNum;
-			_lineRail.createSeparate(_pageNum,_itemRadius);
-			drawHandle();
+		public function setItemRadius(itemRadius:Number):void{
+			_dataInfo._itemRadius = itemRadius;
 		}
 		
 		/**
-		 * @initial 设置半径
+		 * 设置速度
 		 */
-		public function addItemRadius(itemRadius:Number):void{
-			_itemRadius = itemRadius;
-			_lineRail.createSeparate(_pageNum,_itemRadius);
-			drawHandle();
+		public function setSpeed(speed:Number):void{
+			_dataInfo._speed = speed;
 		}
 		
 		/**
-		 * @initial 设置速度
+		 * 设置2边的边距
 		 */
-		public function addSpeed(speed:Number):void{
-			_speed = speed;
-			drawHandle();
+		public function setBetweenSidesDist(betweenSidesDist:Number):void{
+			_dataInfo._betweenSidesDist = betweenSidesDist;
 		}
 		
 		/**
-		 * @initial 设置是否是循环滚动
+		 * 设置是否是循环滚动
 		 */
-		public function addIsCircle(isCircle:Boolean):void{
-			_isCircle = isCircle;
+		public function setIsCircle(isCircle:Boolean):void{
+			_dataInfo._isCircle = isCircle;
 		}
 		
 		/**
@@ -199,29 +247,28 @@ package junlas.components.piclist{
 		public function reset():void{
 			
 		}
-		
-		private function run(event:Event):void {
-		}
 		//////////////////////////////////////////////////////////////////////
 		// 对外主要接口1,2,3,4个函数
 		//////////////////////////////////////////////////////////////////////
 		public function previousItems(itemsNum:int = 1):void {
-			_isFirstShow = false;
-			drawHandle();
+			
 		}
 		
 		public function nextItems(itemsNum:int = 1):void {
-			_isFirstShow = false;
-			drawHandle();
+			var index:int = _maxIndex+1;
+			for(var i:int = index;(i<index +itemsNum) && (i<_dataInfo._contentArr.length);i++){
+				var item:JItem = _dataInfo._contentArr[i];
+				item.updatePos(_dataInfo._contentArr[_maxIndex].getPos().plus(_lineRail.distanceInFact));
+				_maxIndex = i;
+			}
+			_goDirection = "next";
 		}
 		
 		public function previousEnd():void {
-			_isFirstShow = false;
 			
 		}
 		
 		public function nextEnd():void {
-			_isFirstShow = false;
 			
 		}
 		

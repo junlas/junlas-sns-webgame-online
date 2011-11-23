@@ -12,71 +12,86 @@ package junlas.components.piclist{
 		//////////////////
 		private var _start:mVector;
 		private var _end:mVector;
-		private var _betweenPointsVector:mVector;
-		private var _separatePoints:Vector.<mVector>;
+		private var _dataInfo:JDataInfo;
 		
-		public function JLineRail(start:mVector,end:mVector) {
+		private var _posLeftPoint:mVector;
+		private var _posRightPoint:mVector;
+		private var _startPosInFactPoint:mVector;
+		private var _endPosInFactPoint:mVector;
+		///连续的两个点间向量////
+		private var _distanceInFact:mVector;
+		
+		private var _radiusVector:mVector;
+		///起点与终点间向量///
+		private var _betweenPointsVector:mVector;
+		
+		public function JLineRail(start:mVector,end:mVector,dataInfo:JDataInfo) {
 			_start = start;
 			_end = end;
+			_dataInfo = dataInfo;
 			_betweenPointsVector = _end.minus(_start);
-			_separatePoints = new Vector.<mVector>();
+			_radiusVector = _betweenPointsVector.clone();
+			_radiusVector.length = _dataInfo._itemRadius;
+			_posLeftPoint = _start.plus(_radiusVector.negate());
+			_posRightPoint = _end.plus(_radiusVector);
+			createSeparate();
 		}
 		
 		/**
 		 * 创建分割点
 		 */
-		public function createSeparate(pageNum:int,itemRadius:Number):void {
+		public function createSeparate():void {
 			var directionVect:mVector = _end.minus(_start);
-			directionVect.length = itemRadius;
-			_start.plusEquals(directionVect.mult(-1));
-			_end.plusEquals(directionVect);
-			var distanceBetweenPoints:Number = _end.distance(_start) / (pageNum + 1);
-			for(var i:int = 0;i <= (pageNum+1);i++) {
-				directionVect.length = distanceBetweenPoints*i;
-				_separatePoints[i] = _start.plus(directionVect);
-			}
-			_betweenPointsVector.length = distanceBetweenPoints;
-			drawSeparate();
+			_startPosInFactPoint = directionVect.clone();
+			_startPosInFactPoint.length = _dataInfo._betweenSidesDist;
+			_startPosInFactPoint.plusEquals(_radiusVector);
+			_endPosInFactPoint = _startPosInFactPoint.mult(-1);
+			_startPosInFactPoint.plusEquals(_start);
+			_endPosInFactPoint.plusEquals(_end);
+			
+			_distanceInFact = _endPosInFactPoint.minus(_startPosInFactPoint);
+			_distanceInFact.length = _distanceInFact.length / (_dataInfo._pageNum-1);
 		}
 		
-		public function drawLine(content:Sprite):void {
+		public function drawDebug(content:Sprite):void {
 			if(JPiclist.__debug__){
-				removeDebugRelation();
 				_debugLineContent = new Shape();
 				_debugLineContent.graphics.lineStyle(3,0x00aacc);
-				_debugLineContent.graphics.moveTo(_start.x,_start.y);
-				_debugLineContent.graphics.lineTo(_end.x,_end.y);
+				_debugLineContent.graphics.moveTo(_posLeftPoint.x,_posLeftPoint.y);
+				_debugLineContent.graphics.lineTo(_posRightPoint.x,_posRightPoint.y);
 				_debugLineContent.graphics.endFill();
 				content.addChild(_debugLineContent);
 			}
+			drawSeparate();
 		}
 		
 		private function drawSeparate():void{
 			if(JPiclist.__debug__){
-				//线条重新绘制
-				_debugLineContent.graphics.clear();
-				_debugLineContent.graphics.lineStyle(3,0x00aacc);
-				_debugLineContent.graphics.moveTo(_start.x,_start.y);
-				_debugLineContent.graphics.lineTo(_end.x,_end.y);
-				_debugLineContent.graphics.endFill();
 				//绘制分割点
-				for each (var p:mVector in _separatePoints) {
+				for(var i:int = 0;i<_dataInfo._pageNum;i++){
+					var distance:mVector = _distanceInFact.clone();
+					distance.length = _distanceInFact.length * i;
+					var nextPoint:mVector = _startPosInFactPoint.plus(distance);
+					_debugLineContent.graphics.lineStyle(1,0xaabbcc);
 					_debugLineContent.graphics.beginFill(0xaabbcc);
-					_debugLineContent.graphics.drawCircle(p.x,p.y,5);
+					_debugLineContent.graphics.drawCircle(nextPoint.x,nextPoint.y,20);
 					_debugLineContent.graphics.endFill();
 				}
+				_debugLineContent.graphics.beginFill(0xffcc00);
+				_debugLineContent.graphics.drawCircle(_startPosInFactPoint.x,_startPosInFactPoint.y,5);
+				_debugLineContent.graphics.endFill();
+				_debugLineContent.graphics.beginFill(0xffcc00);
+				_debugLineContent.graphics.drawCircle(_endPosInFactPoint.x,_endPosInFactPoint.y,5);
+				_debugLineContent.graphics.endFill();
+				/*for each (var p:mVector in _separatePoints) {
+				_debugLineContent.graphics.beginFill(0xaabbcc);
+				_debugLineContent.graphics.drawCircle(p.x,p.y,5);
+				_debugLineContent.graphics.endFill();
+				}*/
 			}
 		}
 		
-		public function getPosPoints():Vector.<mVector>{
-			return _separatePoints;
-		}
-		
-		public function get distanceBetweenPoints():mVector {
-			return _betweenPointsVector;
-		}
-		
-		public function removeDebugRelation():void{
+		private function removeDebugRelation():void{
 			if(_debugLineContent){
 				_debugLineContent.graphics.clear();
 				if(_debugLineContent.parent){
@@ -93,6 +108,49 @@ package junlas.components.piclist{
 			removeDebugRelation();
 			
 		}
+
+		/**
+		 * 起点坐标
+		 */
+		public function get startPosInFactPoint():mVector {
+			return _startPosInFactPoint;
+		}
+		
+		/**
+		 * 终点坐标
+		 */
+		public function get endPosInFactPoint():mVector {
+			return _endPosInFactPoint;
+		}
+		
+		/**
+		 * 距离向量
+		 */
+		public function get distanceInFact():mVector {
+			return _distanceInFact;
+		}
+
+		/**
+		 * 左边点向量
+		 */
+		public function get posLeftPoint():mVector {
+			return _posLeftPoint;
+		}
+
+		/**
+		 * 右边点向量
+		 */
+		public function get posRightPoint():mVector {
+			return _posRightPoint;
+		}
+		
+		/**
+		 * 起点->终点2点之间的向量
+		 */
+		public function get betweenPointsVector():mVector {
+			return _betweenPointsVector;
+		}
+
 
 	}
 }
