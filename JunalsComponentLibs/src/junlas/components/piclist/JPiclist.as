@@ -36,6 +36,7 @@ package junlas.components.piclist{
 		/////////////////////////////
 		private var _minIndex:int;
 		private var _maxIndex:int;
+		private var _isStart:Boolean;
 		
 		public function JPiclist(parent:DisplayObjectContainer=null, xpos:Number=0, ypos:Number=0,direction:String = "horizontal", visibleShow:Sprite=null) {
 			_direction = direction;
@@ -68,8 +69,8 @@ package junlas.components.piclist{
 			addRawChild(_leftEndButton);
 			addRawChild(_rightButton);
 			addRawChild(_rightEndButton);
-			_rightButton.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{nextItems(4)});
-			_leftButton.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{previousItems(3)});
+			_rightButton.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{nextItems(1)});
+			_leftButton.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{previousItems(1)});
 			_rightEndButton.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{nextEnd()});
 			_leftEndButton.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{previousEnd()});
 			
@@ -155,6 +156,8 @@ package junlas.components.piclist{
 		 * 开始启动
 		 */
 		public function start():void{
+			if(_isStart)return;
+			_isStart = true;
 			createRails();
 			calculateSpeed();
 			drawHandle();
@@ -189,7 +192,7 @@ package junlas.components.piclist{
 				_dataInfo._contentArr[_maxIndex].stopUpdatePos();
 				_maxIndex--;
 			}
-			if(minItemPos.y <=0){
+			if(minItemPos.y <=0 && _maxIndex - _minIndex == _dataInfo._pageNum - 1){
 				_goDirection = null;
 				wellCheckPos();
 				return;
@@ -197,6 +200,7 @@ package junlas.components.piclist{
 			var item:JItem;
 			for(var i:int = _minIndex;i<=_maxIndex;i++){
 				item = _dataInfo._contentArr[i];
+				if(minItemPos.y <= 0 && i < _minIndex + _dataInfo._pageNum)continue;
 				item.go(_dataInfo.speedVector);
 			}
 		}
@@ -210,7 +214,7 @@ package junlas.components.piclist{
 				_dataInfo._contentArr[_minIndex].stopUpdatePos();
 				_minIndex++;
 			}
-			if(maxItemPos.y>=0){
+			if(maxItemPos.y>=0 && _maxIndex - _minIndex == _dataInfo._pageNum - 1){
 				_goDirection = null;
 				wellCheckPos();
 				return;
@@ -218,6 +222,7 @@ package junlas.components.piclist{
 			var item:JItem;
 			for(var i:int = _minIndex;i<=_maxIndex;i++){
 				item = _dataInfo._contentArr[i];
+				if(maxItemPos.y >= 0 && i>_maxIndex-_dataInfo._pageNum)continue;
 				item.go(_dataInfo.speedNegateVector);
 			}
 		}
@@ -264,6 +269,7 @@ package junlas.components.piclist{
 		 */
 		public function setFirstShowIndex(firstShowIndex:int):void{
 			_dataInfo._firstShowIndex = firstShowIndex;
+			_isStart && wellUploadPos();
 		}
 		
 		/**
@@ -271,6 +277,7 @@ package junlas.components.piclist{
 		 */
 		public function setPageNum(pageNum:int):void{
 			_dataInfo._pageNum = pageNum;
+			_isStart && _lineRail.createSeparate();
 		}
 		
 		/**
@@ -278,6 +285,7 @@ package junlas.components.piclist{
 		 */
 		public function setItemRadius(itemRadius:Number):void{
 			_dataInfo._itemRadius = itemRadius;
+			_isStart && _lineRail.init();//createSeparate();在init();方法里已经执行过
 		}
 		
 		/**
@@ -285,6 +293,7 @@ package junlas.components.piclist{
 		 */
 		public function setSpeed(speed:Number):void{
 			_dataInfo._speed = speed;
+			_isStart && calculateSpeed();
 		}
 		
 		/**
@@ -292,6 +301,7 @@ package junlas.components.piclist{
 		 */
 		public function setBetweenSidesDist(betweenSidesDist:Number):void{
 			_dataInfo._betweenSidesDist = betweenSidesDist;
+			_isStart && _lineRail.createSeparate();
 		}
 		
 		/**
@@ -387,6 +397,7 @@ package junlas.components.piclist{
 			_lineRail.destroy();
 			_lineRail = null;
 			this.content.removeChild(_pmc);
+			_isStart = false;
 			super.destroy();
 		}
 		

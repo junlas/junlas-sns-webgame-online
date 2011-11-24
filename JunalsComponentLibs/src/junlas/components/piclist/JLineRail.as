@@ -31,6 +31,10 @@ package junlas.components.piclist{
 			_end = end;
 			_dataInfo = dataInfo;
 			_betweenPointsVector = _end.minus(_start);
+			init();
+		}
+		
+		public function init():void{
 			_radiusVector = _betweenPointsVector.clone();
 			_radiusVector.length = _dataInfo._itemRadius;
 			_posLeftPoint = _start.plus(_radiusVector.negate());
@@ -42,6 +46,7 @@ package junlas.components.piclist{
 		 * 创建分割点
 		 */
 		public function createSeparate():void {
+			//要预防当_dataInfo._pageNum <= 1的这种情况，一直要做好判断
 			var directionVect:mVector = _end.minus(_start);
 			_startPosInFactPoint = directionVect.clone();
 			_startPosInFactPoint.length = _dataInfo._betweenSidesDist;
@@ -50,9 +55,17 @@ package junlas.components.piclist{
 			_startPosInFactPoint.plusEquals(_start);
 			_endPosInFactPoint.plusEquals(_end);
 			
-			_distanceInFact = _endPosInFactPoint.minus(_startPosInFactPoint);
-			_distanceInFact.length = _distanceInFact.length / (_dataInfo._pageNum-1);
+			if(_dataInfo._pageNum > 1){
+				_distanceInFact = _endPosInFactPoint.minus(_startPosInFactPoint);
+				(_distanceInFact.length = _distanceInFact.length / (_dataInfo._pageNum-1));
+			}else{
+				_distanceInFact = directionVect.clone();
+				_distanceInFact.length = _dataInfo._itemRadius*2;
+			}
 			_distanceNegateInFact = _distanceInFact.negate();
+			if(_dataInfo._pageNum <= 1){
+				_endPosInFactPoint = _startPosInFactPoint;
+			}
 		}
 		
 		public function drawDebug(content:Sprite):void {

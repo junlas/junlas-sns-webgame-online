@@ -12,8 +12,6 @@ package junlas.components.piclist{
 		internal var _speed:Number;
 		internal var _betweenSidesDist:Number;
 		internal var _isCircle:Boolean;
-		//一次缓动设置移动的数目//
-		internal var _tweenItemNumAtOnce:int = 1;
 		///速度向量与其反向量 ///
 		private var _speedVector:mVector;
 		private var _speedNegateVector:mVector;
