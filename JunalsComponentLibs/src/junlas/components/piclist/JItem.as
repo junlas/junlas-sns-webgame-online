@@ -58,9 +58,9 @@ package junlas.components.piclist{
 				_debugChild.x = _car.pos.x;
 				_debugChild.y = _car.pos.y;
 			}
-			/*if(!_pmc.contains(_child)){
+			if(!_pmc.contains(_child)){
 				_pmc.addChild(_child);
-			}*/
+			}
 			_child.x = _car.pos.x;
 			_child.y = _car.pos.y;
 		}
