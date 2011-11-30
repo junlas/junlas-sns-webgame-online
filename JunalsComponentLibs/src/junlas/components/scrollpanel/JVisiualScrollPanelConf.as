@@ -13,6 +13,22 @@ package junlas.components.scrollpanel{
 		 */
 		public static var slider_btn_up:String = "slider_up";
 		/**
+		 * 按钮的宽
+		 */
+		public static var button_up_left_width:int = 40;
+		/**
+		 * 按钮的高
+		 */
+		public static var button_up_left_height:int = 40;
+		/**
+		 * 按钮的宽
+		 */
+		public static var button_down_right_width:int = 40;
+		/**
+		 * 按钮的高
+		 */
+		public static var button_down_right_height:int = 40;
+		/**
 		 * 滚动条组件向下按钮名称
 		 */
 		public static var slider_btn_down:String = "slider_down";

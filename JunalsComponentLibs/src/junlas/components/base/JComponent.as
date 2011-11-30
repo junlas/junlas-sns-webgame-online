@@ -7,6 +7,7 @@ package junlas.components.base
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
 	import flash.filters.DropShadowFilter;
+	
 	import junlas.components.scrollpanel.JStyle;
 
 	[Event(name="resize", type="flash.events.Event")]
@@ -229,9 +230,13 @@ package junlas.components.base
 		//////////////////////////////////////////
 		public function destroy():void{
 			_isDes = true;
-			if(parent != null)
-			{
-				parent.removeChild(this);
+			if(parent != null) {
+				if(parent.hasOwnProperty("removeRawChild") && parent["removeRawChild"] is Function){
+					parent["removeRawChild"](this);
+				}else{
+					parent.removeChild(this);
+				}
+				
 			}
 		}
 

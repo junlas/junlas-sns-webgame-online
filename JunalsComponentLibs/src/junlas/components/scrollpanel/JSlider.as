@@ -66,7 +66,7 @@ package junlas.components.scrollpanel
 		 */
 		override protected function addChildren():void
 		{
-			if(_visibleShow){
+			if(_visibleShow && ((_orientation == VERTICAL && _visibleShow.hasOwnProperty(JVisiualScrollPanelConf.slider_back))||(_orientation != VERTICAL && _visibleShow.hasOwnProperty(JVisiualScrollPanelConf.slider_bottom_back)))){
 				if(_orientation == VERTICAL){
 					_back = _visibleShow[JVisiualScrollPanelConf.slider_back];
 				}else{
@@ -79,7 +79,7 @@ package junlas.components.scrollpanel
 			}
 			addChild(_back);
 			
-			if(_visibleShow){
+			if(_visibleShow && ((_orientation == VERTICAL && _visibleShow.hasOwnProperty(JVisiualScrollPanelConf.slider_btn_handler))||(_orientation != VERTICAL && _visibleShow.hasOwnProperty(JVisiualScrollPanelConf.slider_bottom_btn_handler)))){
 				if(_orientation == VERTICAL){
 					_handle = _visibleShow[JVisiualScrollPanelConf.slider_btn_handler];
 				}else{

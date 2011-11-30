@@ -6,6 +6,7 @@ package junlas.components.scrollpanel
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
+	
 	import junlas.components.base.JPanel;
 	
 	/**
@@ -17,6 +18,8 @@ package junlas.components.scrollpanel
 		protected var _hScrollbar:JHScrollBar;
 		protected var _corner:Shape;
 		protected var _dragContent:Boolean = true;
+		protected var _autoVScrollMaxValue:Boolean = false;
+		protected var _autoHScrollMaxValue:Boolean = false;
 		
 		/**
 		 * Constructor
@@ -60,8 +63,8 @@ package junlas.components.scrollpanel
 		override protected function addChildren():void
 		{
 			super.addChildren();
-			_vScrollbar = new JVScrollBar(null, width - 10, 0, onScroll,_visibleShow);
-			_hScrollbar = new JHScrollBar(null, 0, height - 10, onScroll,_visibleShow);
+			_vScrollbar = new JVScrollBar(null, width - JVisiualScrollPanelConf.button_up_left_width, 0, onScroll,_visibleShow);
+			_hScrollbar = new JHScrollBar(null, 0, height - JVisiualScrollPanelConf.button_up_left_height, onScroll,_visibleShow);
 			addRawChild(_vScrollbar);
 			addRawChild(_hScrollbar);
 			_corner = new Shape();
@@ -86,11 +89,11 @@ package junlas.components.scrollpanel
 		{
 			super.draw();
 			
-			var vPercent:Number = (_height - 10) / content.height;
-			var hPercent:Number = (_width - 10) / content.width; 
+			var vPercent:Number = (_height - JVisiualScrollPanelConf.button_up_left_height) / content.height;
+			var hPercent:Number = (_width - JVisiualScrollPanelConf.button_up_left_width) / content.width; 
 			
-			_vScrollbar.x = width - 10;
-			_hScrollbar.y = height - 10;
+			_vScrollbar.x = width - JVisiualScrollPanelConf.button_up_left_width;
+			_hScrollbar.y = height - JVisiualScrollPanelConf.button_up_left_height;
 			
 			if(hPercent >= 1)
 			{
@@ -99,8 +102,8 @@ package junlas.components.scrollpanel
 			}
 			else
 			{
-				_vScrollbar.height = height - 10;
-				_mask.height = height - 10;
+				_vScrollbar.height = height - JVisiualScrollPanelConf.button_up_left_height;
+				_mask.height = height - JVisiualScrollPanelConf.button_up_left_height;
 			}
 			if(vPercent >= 1)
 			{
@@ -109,19 +112,21 @@ package junlas.components.scrollpanel
 			}
 			else
 			{
-				_hScrollbar.width = width - 10;
-				_mask.width = width - 10;
+				_hScrollbar.width = width - JVisiualScrollPanelConf.button_up_left_width;
+				_mask.width = width - JVisiualScrollPanelConf.button_up_left_width;
 			}
 			_vScrollbar.setThumbPercent(vPercent);
-			_vScrollbar.maximum = Math.max(0, content.height - _height + 10);
-			_vScrollbar.pageSize = _height - 10;
+			_vScrollbar.maximum = Math.max(0, content.height - _height + JVisiualScrollPanelConf.button_up_left_height);
+			_vScrollbar.pageSize = _height - JVisiualScrollPanelConf.button_up_left_height;
+			_autoVScrollMaxValue && (_vScrollbar.value = _vScrollbar.maximum);
 			
 			_hScrollbar.setThumbPercent(hPercent);
-			_hScrollbar.maximum = Math.max(0, content.width - _width + 10);
-			_hScrollbar.pageSize = _width - 10;
+			_hScrollbar.maximum = Math.max(0, content.width - _width + JVisiualScrollPanelConf.button_up_left_width);
+			_hScrollbar.pageSize = _width - JVisiualScrollPanelConf.button_up_left_width;
+			_autoHScrollMaxValue && (_hScrollbar.value = _hScrollbar.maximum);
 			
-			_corner.x = width - 10;
-			_corner.y = height - 10;
+			_corner.x = width - JVisiualScrollPanelConf.button_up_left_width;
+			_corner.y = height - JVisiualScrollPanelConf.button_up_left_height;
 			_corner.visible = (hPercent < 1) && (vPercent < 1);
 			content.x = -_hScrollbar.value;
 			content.y = -_vScrollbar.value;
@@ -203,10 +208,28 @@ package junlas.components.scrollpanel
             _vScrollbar.autoHide = value;
             _hScrollbar.autoHide = value;
         }
+		
         public function get autoHideScrollBar():Boolean
         {
             return _vScrollbar.autoHide;
         }
+		
+		public function get autoVScrollMaxValue():Boolean {
+			return _autoVScrollMaxValue;
+		}
+		
+		public function set autoVScrollMaxValue(value:Boolean):void {
+			_autoVScrollMaxValue = value;
+		}
+		
+		public function get autoHScrollMaxValue():Boolean {
+			return _autoHScrollMaxValue;
+		}
+		
+		public function set autoHScrollMaxValue(value:Boolean):void {
+			_autoHScrollMaxValue = value;
+		}
+		
 		
 		//////////////////////////////////////////
 		//  dispose
