@@ -36,8 +36,8 @@ package junlas.components.base
 		
 		override protected function addChildren():void
 		{
-			if(_visibleShow && _visibleShow.hasOwnProperty(_visibleConfig.scroll_background)){
-				_background = _visibleShow[_visibleConfig.scroll_background];
+			if(_visibleShow && _visibleShow.hasOwnProperty(_visibleConfig.panel_background)){
+				_background = _visibleShow[_visibleConfig.panel_background];
 				_background.x = 0;
 				_background.y = 0;
 			}else {
@@ -133,7 +133,7 @@ package junlas.components.base
 		override public function draw():void
 		{
 			super.draw();
-			if(_visibleShow && _visibleShow.hasOwnProperty(_visibleConfig.scroll_background)){
+			if(_visibleShow && _visibleShow.hasOwnProperty(_visibleConfig.panel_background)){
 				_background.width = _width;
 				_background.height = _height;
 			} else {
