@@ -8,6 +8,7 @@ package junlas.components.scrollpanel
 	import flash.geom.Rectangle;
 	
 	import junlas.components.base.JPanel;
+	import junlas.components.base.JVisiualConfig;
 	
 	/**
 	 * @author lvjun01
@@ -27,9 +28,10 @@ package junlas.components.scrollpanel
 		 * @param xpos The x position to place this component.
 		 * @param ypos The y position to place this component.
 		 */
-		public function JScrollPane(parent:DisplayObjectContainer=null, xpos:Number=0, ypos:Number=0,visibleShow:Sprite = null)
+		public function JScrollPane(parent:DisplayObjectContainer=null, xpos:Number=0, ypos:Number=0,visibleShow:Sprite = null,visibleConfig:JVisiualScrollPanelConf = null)
 		{
-			super(parent, xpos, ypos,visibleShow);
+			visibleConfig = (visibleConfig?visibleConfig:new JVisiualScrollPanelConf());
+			super(parent, xpos, ypos,visibleShow,visibleConfig);
 		}
 		
 		/**
@@ -63,8 +65,8 @@ package junlas.components.scrollpanel
 		override protected function addChildren():void
 		{
 			super.addChildren();
-			_vScrollbar = new JVScrollBar(null, width - JVisiualScrollPanelConf.button_up_left_width, 0, onScroll,_visibleShow);
-			_hScrollbar = new JHScrollBar(null, 0, height - JVisiualScrollPanelConf.button_up_left_height, onScroll,_visibleShow);
+			_vScrollbar = new JVScrollBar(null, width - _visibleConfig.button_up_left_width, 0, onScroll,_visibleShow,_visibleConfig);
+			_hScrollbar = new JHScrollBar(null, 0, height - _visibleConfig.button_up_left_height, onScroll,_visibleShow,_visibleConfig);
 			addRawChild(_vScrollbar);
 			addRawChild(_hScrollbar);
 			_corner = new Shape();
@@ -89,11 +91,11 @@ package junlas.components.scrollpanel
 		{
 			super.draw();
 			
-			var vPercent:Number = (_height - JVisiualScrollPanelConf.button_up_left_height) / content.height;
-			var hPercent:Number = (_width - JVisiualScrollPanelConf.button_up_left_width) / content.width; 
+			var vPercent:Number = (_height - _visibleConfig.button_up_left_height) / content.height;
+			var hPercent:Number = (_width - _visibleConfig.button_up_left_width) / content.width; 
 			
-			_vScrollbar.x = width - JVisiualScrollPanelConf.button_up_left_width;
-			_hScrollbar.y = height - JVisiualScrollPanelConf.button_up_left_height;
+			_vScrollbar.x = width - _visibleConfig.button_up_left_width;
+			_hScrollbar.y = height - _visibleConfig.button_up_left_height;
 			
 			if(hPercent >= 1)
 			{
@@ -102,8 +104,8 @@ package junlas.components.scrollpanel
 			}
 			else
 			{
-				_vScrollbar.height = height - JVisiualScrollPanelConf.button_up_left_height;
-				_mask.height = height - JVisiualScrollPanelConf.button_up_left_height;
+				_vScrollbar.height = height - _visibleConfig.button_up_left_height;
+				_mask.height = height - _visibleConfig.button_up_left_height;
 			}
 			if(vPercent >= 1)
 			{
@@ -112,21 +114,21 @@ package junlas.components.scrollpanel
 			}
 			else
 			{
-				_hScrollbar.width = width - JVisiualScrollPanelConf.button_up_left_width;
-				_mask.width = width - JVisiualScrollPanelConf.button_up_left_width;
+				_hScrollbar.width = width - _visibleConfig.button_up_left_width;
+				_mask.width = width - _visibleConfig.button_up_left_width;
 			}
 			_vScrollbar.setThumbPercent(vPercent);
-			_vScrollbar.maximum = Math.max(0, content.height - _height + JVisiualScrollPanelConf.button_up_left_height);
-			_vScrollbar.pageSize = _height - JVisiualScrollPanelConf.button_up_left_height;
+			_vScrollbar.maximum = Math.max(0, content.height - _height + _visibleConfig.button_up_left_height);
+			_vScrollbar.pageSize = _height - _visibleConfig.button_up_left_height;
 			_autoVScrollMaxValue && (_vScrollbar.value = _vScrollbar.maximum);
 			
 			_hScrollbar.setThumbPercent(hPercent);
-			_hScrollbar.maximum = Math.max(0, content.width - _width + JVisiualScrollPanelConf.button_up_left_width);
-			_hScrollbar.pageSize = _width - JVisiualScrollPanelConf.button_up_left_width;
+			_hScrollbar.maximum = Math.max(0, content.width - _width + _visibleConfig.button_up_left_width);
+			_hScrollbar.pageSize = _width - _visibleConfig.button_up_left_width;
 			_autoHScrollMaxValue && (_hScrollbar.value = _hScrollbar.maximum);
 			
-			_corner.x = width - JVisiualScrollPanelConf.button_up_left_width;
-			_corner.y = height - JVisiualScrollPanelConf.button_up_left_height;
+			_corner.x = width - _visibleConfig.button_up_left_width;
+			_corner.y = height - _visibleConfig.button_up_left_height;
 			_corner.visible = (hPercent < 1) && (vPercent < 1);
 			content.x = -_hScrollbar.value;
 			content.y = -_vScrollbar.value;

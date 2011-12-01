@@ -17,6 +17,7 @@ package junlas.components.base
 	 */
 	public class JComponent extends Sprite
 	{
+		protected var _visibleConfig:JVisiualConfig;
 		protected var _width:Number = 0;
 		protected var _height:Number = 0;
 		protected var _tag:int = -1;
@@ -35,10 +36,11 @@ package junlas.components.base
 		 * @param xpos The x position to place this component.
 		 * @param ypos The y position to place this component.
 		 */
-		public function JComponent(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0,visibleShow:Sprite = null)
+		public function JComponent(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0,visibleShow:Sprite = null,visibleConfig:JVisiualConfig = null)
 		{
 			move(xpos, ypos);
 			_visibleShow = visibleShow;
+			_visibleConfig = visibleConfig;
 			init();
 			if(parent != null)
 			{

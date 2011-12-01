@@ -38,9 +38,10 @@ package junlas.components.piclist{
 		private var _maxIndex:int;
 		private var _isStart:Boolean;
 		
-		public function JPiclist(parent:DisplayObjectContainer=null, xpos:Number=0, ypos:Number=0,direction:String = "horizontal", visibleShow:Sprite=null) {
+		public function JPiclist(parent:DisplayObjectContainer=null, xpos:Number=0, ypos:Number=0,direction:String = "horizontal", visibleShow:Sprite=null,visibleConfig:JVisiualPiclistConf = null) {
 			_direction = direction;
-			super(parent, xpos, ypos, visibleShow);
+			visibleConfig = (visibleConfig?visibleConfig:new JVisiualPiclistConf());
+			super(parent, xpos, ypos, visibleShow,visibleConfig);
 		}
 		
 		override protected function init():void{
@@ -69,7 +70,7 @@ package junlas.components.piclist{
 			addRawChild(_leftEndButton);
 			addRawChild(_rightButton);
 			addRawChild(_rightEndButton);
-			_rightButton.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{nextItems(1)});
+			_rightButton.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{nextItems(2)});
 			_leftButton.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{previousItems(1)});
 			_rightEndButton.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{nextEnd()});
 			_leftEndButton.addEventListener(MouseEvent.CLICK,function(e:MouseEvent):void{previousEnd()});

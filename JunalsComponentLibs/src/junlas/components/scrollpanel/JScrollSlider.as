@@ -10,6 +10,7 @@ package junlas.components.scrollpanel{
 	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
 	
+	import junlas.components.base.JVisiualConfig;
 	import junlas.components.scrollpanel.JSlider;
 	import junlas.components.scrollpanel.JStyle;
 	
@@ -31,9 +32,9 @@ package junlas.components.scrollpanel{
 		 * @param ypos The y position to place this component.
 		 * @param defaultHandler The event handling function to handle the default event for this component (change in this case).
 		 */
-		public function JScrollSlider(orientation:String, parent:DisplayObjectContainer=null, xpos:Number=0, ypos:Number=0, defaultHandler:Function = null,visibleShow:Sprite = null)
+		public function JScrollSlider(orientation:String, parent:DisplayObjectContainer=null, xpos:Number=0, ypos:Number=0, defaultHandler:Function = null,visibleShow:Sprite = null,visibleConfig:JVisiualConfig = null)
 		{
-			super(orientation, parent, xpos, ypos,null,visibleShow);
+			super(orientation, parent, xpos, ypos,null,visibleShow,visibleConfig);
 			if(defaultHandler != null)
 			{
 				_defaultHandler = defaultHandler;

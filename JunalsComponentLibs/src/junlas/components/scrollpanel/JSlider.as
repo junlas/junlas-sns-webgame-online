@@ -5,7 +5,9 @@ package junlas.components.scrollpanel
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
+	
 	import junlas.components.base.JComponent;
+	import junlas.components.base.JVisiualConfig;
 	
 	[Event(name="change", type="flash.events.Event")]
 	public class JSlider extends JComponent
@@ -33,10 +35,10 @@ package junlas.components.scrollpanel
 		 * @param ypos The y position to place this component.
 		 * @param defaultHandler The event handling function to handle the default event for this component (change in this case).
 		 */
-		public function JSlider(orientation:String = JSlider.HORIZONTAL, parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0, defaultHandler:Function = null,visibleShow:Sprite = null)
+		public function JSlider(orientation:String = JSlider.HORIZONTAL, parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0, defaultHandler:Function = null,visibleShow:Sprite = null,visibleConfig:JVisiualConfig =null)
 		{
 			_orientation = orientation;
-			super(parent, xpos, ypos,visibleShow);
+			super(parent, xpos, ypos,visibleShow,visibleConfig);
 			if(defaultHandler != null)
 			{
 				_defaultHandler = defaultHandler;
@@ -66,11 +68,11 @@ package junlas.components.scrollpanel
 		 */
 		override protected function addChildren():void
 		{
-			if(_visibleShow && ((_orientation == VERTICAL && _visibleShow.hasOwnProperty(JVisiualScrollPanelConf.slider_back))||(_orientation != VERTICAL && _visibleShow.hasOwnProperty(JVisiualScrollPanelConf.slider_bottom_back)))){
+			if(_visibleShow && ((_orientation == VERTICAL && _visibleShow.hasOwnProperty(_visibleConfig.slider_back))||(_orientation != VERTICAL && _visibleShow.hasOwnProperty(_visibleConfig.slider_bottom_back)))){
 				if(_orientation == VERTICAL){
-					_back = _visibleShow[JVisiualScrollPanelConf.slider_back];
+					_back = _visibleShow[_visibleConfig.slider_back];
 				}else{
-					_back = _visibleShow[JVisiualScrollPanelConf.slider_bottom_back];
+					_back = _visibleShow[_visibleConfig.slider_bottom_back];
 				}
 				_back.x = _back.y = 0;
 			}else{
@@ -79,11 +81,11 @@ package junlas.components.scrollpanel
 			}
 			addChild(_back);
 			
-			if(_visibleShow && ((_orientation == VERTICAL && _visibleShow.hasOwnProperty(JVisiualScrollPanelConf.slider_btn_handler))||(_orientation != VERTICAL && _visibleShow.hasOwnProperty(JVisiualScrollPanelConf.slider_bottom_btn_handler)))){
+			if(_visibleShow && ((_orientation == VERTICAL && _visibleShow.hasOwnProperty(_visibleConfig.slider_btn_handler))||(_orientation != VERTICAL && _visibleShow.hasOwnProperty(_visibleConfig.slider_bottom_btn_handler)))){
 				if(_orientation == VERTICAL){
-					_handle = _visibleShow[JVisiualScrollPanelConf.slider_btn_handler];
+					_handle = _visibleShow[_visibleConfig.slider_btn_handler];
 				}else{
-					_handle = _visibleShow[JVisiualScrollPanelConf.slider_bottom_btn_handler];
+					_handle = _visibleShow[_visibleConfig.slider_bottom_btn_handler];
 				}
 				_handle.addEventListener(MouseEvent.MOUSE_DOWN, onDrag);
 				_handle.buttonMode = true;

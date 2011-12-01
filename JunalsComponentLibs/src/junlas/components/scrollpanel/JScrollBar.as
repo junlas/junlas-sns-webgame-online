@@ -11,6 +11,7 @@ package junlas.components.scrollpanel
 	
 	import junlas.components.base.JComponent;
 	import junlas.components.base.JPushButton;
+	import junlas.components.base.JVisiualConfig;
 
 	[Event(name="change", type="flash.events.Event")]
 	public class JScrollBar extends JComponent
@@ -44,10 +45,10 @@ package junlas.components.scrollpanel
 		 * @param ypos The y position to place this component.
 		 * @param defaultHandler The event handling function to handle the default event for this component (change in this case).
 		 */
-		public function JScrollBar(orientation:String, parent:DisplayObjectContainer=null, xpos:Number=0, ypos:Number=0, defaultHandler:Function = null,visibleShow:Sprite = null)
+		public function JScrollBar(orientation:String, parent:DisplayObjectContainer=null, xpos:Number=0, ypos:Number=0, defaultHandler:Function = null,visibleShow:Sprite = null,visibleConfig:JVisiualConfig = null)
 		{
 			_orientation = orientation;
-			super(parent, xpos, ypos,visibleShow);
+			super(parent, xpos, ypos,visibleShow,visibleConfig);
 			if(defaultHandler != null)
 			{
 				_defaultHandler = defaultHandler;
@@ -62,43 +63,43 @@ package junlas.components.scrollpanel
 		 */
 		override protected function addChildren():void
 		{
-			_scrollSlider = new JScrollSlider(_orientation, this, 0, 10, onChange,_visibleShow);
-			if(_visibleShow && ((_orientation == JSlider.VERTICAL &&_visibleShow.hasOwnProperty(JVisiualScrollPanelConf.slider_btn_up))||(_orientation != JSlider.VERTICAL &&_visibleShow.hasOwnProperty(JVisiualScrollPanelConf.slider_btn_left)))){
+			_scrollSlider = new JScrollSlider(_orientation, this, 0, 10, onChange,_visibleShow,_visibleConfig);
+			if(_visibleShow && ((_orientation == JSlider.VERTICAL &&_visibleShow.hasOwnProperty(_visibleConfig.slider_btn_up))||(_orientation != JSlider.VERTICAL &&_visibleShow.hasOwnProperty(_visibleConfig.slider_btn_left)))){
 				if(_orientation == JSlider.VERTICAL){
-					_upButtonSprite = _visibleShow[JVisiualScrollPanelConf.slider_btn_up];
+					_upButtonSprite = _visibleShow[_visibleConfig.slider_btn_up];
 				}else{
-					_upButtonSprite = _visibleShow[JVisiualScrollPanelConf.slider_btn_left];
+					_upButtonSprite = _visibleShow[_visibleConfig.slider_btn_left];
 				}
 				_upButtonSprite.x = _upButtonSprite.y = 0;
 				_upButtonSprite.addEventListener(MouseEvent.MOUSE_DOWN, onUpClick);
-				_upButtonSprite.width = JVisiualScrollPanelConf.button_up_left_width;
-				_upButtonSprite.height = JVisiualScrollPanelConf.button_up_left_height;
+				_upButtonSprite.width = _visibleConfig.button_up_left_width;
+				_upButtonSprite.height = _visibleConfig.button_up_left_height;
 				_upButtonSprite.buttonMode = _upButtonSprite.useHandCursor = true;
 				this.addChild(_upButtonSprite);
 			} else {
 				_upButton = new JPushButton(this, 0, 0, "");
 				_upButton.addEventListener(MouseEvent.MOUSE_DOWN, onUpClick);
-				_upButton.setSize(JVisiualScrollPanelConf.button_up_left_width, JVisiualScrollPanelConf.button_up_left_height);
+				_upButton.setSize(_visibleConfig.button_up_left_width, _visibleConfig.button_up_left_height);
 				var upArrow:Shape = new Shape();
 				_upButton.addChild(upArrow);
 			}
 			
-			if(_visibleShow && ((_orientation == JSlider.VERTICAL && _visibleShow.hasOwnProperty(JVisiualScrollPanelConf.slider_btn_down))||(_orientation != JSlider.VERTICAL && _visibleShow.hasOwnProperty(JVisiualScrollPanelConf.slider_btn_right)))){
+			if(_visibleShow && ((_orientation == JSlider.VERTICAL && _visibleShow.hasOwnProperty(_visibleConfig.slider_btn_down))||(_orientation != JSlider.VERTICAL && _visibleShow.hasOwnProperty(_visibleConfig.slider_btn_right)))){
 				if(_orientation == JSlider.VERTICAL){
-					_downButtonSprite = _visibleShow[JVisiualScrollPanelConf.slider_btn_down];
+					_downButtonSprite = _visibleShow[_visibleConfig.slider_btn_down];
 				}else{
-					_downButtonSprite = _visibleShow[JVisiualScrollPanelConf.slider_btn_right];
+					_downButtonSprite = _visibleShow[_visibleConfig.slider_btn_right];
 				}
 				_downButtonSprite.x = _downButtonSprite.y = 0;
 				_downButtonSprite.addEventListener(MouseEvent.MOUSE_DOWN, onDownClick);
-				_downButtonSprite.width = JVisiualScrollPanelConf.button_down_right_width;
-				_downButtonSprite.height = JVisiualScrollPanelConf.button_down_right_height;
+				_downButtonSprite.width = _visibleConfig.button_down_right_width;
+				_downButtonSprite.height = _visibleConfig.button_down_right_height;
 				_downButtonSprite.buttonMode = _downButtonSprite.useHandCursor = true;
 				this.addChild(_downButtonSprite);
 			}else{
 				_downButton = new JPushButton(this, 0, 0, "");
 				_downButton.addEventListener(MouseEvent.MOUSE_DOWN, onDownClick);
-				_downButton.setSize(JVisiualScrollPanelConf.button_down_right_width, JVisiualScrollPanelConf.button_down_right_height);
+				_downButton.setSize(_visibleConfig.button_down_right_width, _visibleConfig.button_down_right_height);
 				var downArrow:Shape = new Shape();
 				_downButton.addChild(downArrow);
 			}
@@ -190,23 +191,23 @@ package junlas.components.scrollpanel
 			if(_orientation == JSlider.VERTICAL)
 			{
 				_scrollSlider.x = 0;
-				_scrollSlider.y = JVisiualScrollPanelConf.button_up_left_height;
-				_scrollSlider.width = JVisiualScrollPanelConf.button_up_left_width;
-				_scrollSlider.height = _height - JVisiualScrollPanelConf.button_down_right_height - JVisiualScrollPanelConf.button_up_left_height;
+				_scrollSlider.y = _visibleConfig.button_up_left_height;
+				_scrollSlider.width = _visibleConfig.button_up_left_width;
+				_scrollSlider.height = _height - _visibleConfig.button_down_right_height - _visibleConfig.button_up_left_height;
 				_downButton && (_downButton.x = 0);
-				_downButton && (_downButton.y = _height - JVisiualScrollPanelConf.button_down_right_height);
+				_downButton && (_downButton.y = _height - _visibleConfig.button_down_right_height);
 				_downButtonSprite && (_downButtonSprite.x = 0);
-				_downButtonSprite && (_downButtonSprite.y = _height - JVisiualScrollPanelConf.button_down_right_height);
+				_downButtonSprite && (_downButtonSprite.y = _height - _visibleConfig.button_down_right_height);
 			}
 			else
 			{
-				_scrollSlider.x = JVisiualScrollPanelConf.button_up_left_width;
+				_scrollSlider.x = _visibleConfig.button_up_left_width;
 				_scrollSlider.y = 0;
-				_scrollSlider.width = _width - JVisiualScrollPanelConf.button_down_right_width-JVisiualScrollPanelConf.button_up_left_width;
-				_scrollSlider.height = JVisiualScrollPanelConf.button_up_left_height;
-				_downButton && (_downButton.x = _width - JVisiualScrollPanelConf.button_down_right_width);
+				_scrollSlider.width = _width - _visibleConfig.button_down_right_width-_visibleConfig.button_up_left_width;
+				_scrollSlider.height = _visibleConfig.button_up_left_height;
+				_downButton && (_downButton.x = _width - _visibleConfig.button_down_right_width);
 				_downButton && (_downButton.y = 0);
-				_downButtonSprite && (_downButtonSprite.x = _width - JVisiualScrollPanelConf.button_down_right_width);
+				_downButtonSprite && (_downButtonSprite.x = _width - _visibleConfig.button_down_right_width);
 				_downButtonSprite && (_downButtonSprite.y = 0);
 			}
 			_scrollSlider.draw();

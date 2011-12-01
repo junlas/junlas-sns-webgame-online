@@ -2,6 +2,7 @@ package junlas.components.scrollpanel
 {
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Sprite;
+	import junlas.components.base.JVisiualConfig;
 	
 	/**
 	 * Constructor
@@ -12,9 +13,9 @@ package junlas.components.scrollpanel
 	 */
 	public class JHScrollBar extends JScrollBar
 	{
-		public function JHScrollBar(parent:DisplayObjectContainer=null, xpos:Number=0, ypos:Number=0, defaultHandler:Function=null,visibleShow:Sprite = null)
+		public function JHScrollBar(parent:DisplayObjectContainer=null, xpos:Number=0, ypos:Number=0, defaultHandler:Function=null,visibleShow:Sprite = null,visibleConfig:JVisiualConfig = null)
 		{
-			super(JSlider.HORIZONTAL, parent, xpos, ypos, defaultHandler,visibleShow);
+			super(JSlider.HORIZONTAL, parent, xpos, ypos, defaultHandler,visibleShow,visibleConfig);
 		}
 	}
 }

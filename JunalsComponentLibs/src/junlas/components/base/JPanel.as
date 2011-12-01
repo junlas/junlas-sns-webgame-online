@@ -5,7 +5,6 @@ package junlas.components.base
 	import flash.display.Sprite;
 	
 	import junlas.components.scrollpanel.JStyle;
-	import junlas.components.scrollpanel.JVisiualScrollPanelConf;
 	
 	/**
 	 * @author lvjun01
@@ -24,9 +23,9 @@ package junlas.components.base
 		/////////////内容显示容器/////////////
 		protected var content:Sprite;
 		
-		public function JPanel(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0,visibleShow:Sprite = null)
+		public function JPanel(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0,visibleShow:Sprite = null,visibleConfig:JVisiualConfig = null)
 		{
-			super(parent, xpos, ypos,visibleShow);
+			super(parent, xpos, ypos,visibleShow,visibleConfig);
 		}
 		
 		override protected function init():void
@@ -37,8 +36,8 @@ package junlas.components.base
 		
 		override protected function addChildren():void
 		{
-			if(_visibleShow && _visibleShow.hasOwnProperty(JVisiualScrollPanelConf.scroll_background)){
-				_background = _visibleShow[JVisiualScrollPanelConf.scroll_background];
+			if(_visibleShow && _visibleShow.hasOwnProperty(_visibleConfig.scroll_background)){
+				_background = _visibleShow[_visibleConfig.scroll_background];
 				_background.x = 0;
 				_background.y = 0;
 			}else {
@@ -134,7 +133,7 @@ package junlas.components.base
 		override public function draw():void
 		{
 			super.draw();
-			if(_visibleShow && _visibleShow.hasOwnProperty(JVisiualScrollPanelConf.scroll_background)){
+			if(_visibleShow && _visibleShow.hasOwnProperty(_visibleConfig.scroll_background)){
 				_background.width = _width;
 				_background.height = _height;
 			} else {
