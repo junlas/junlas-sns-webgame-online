@@ -1,5 +1,6 @@
 package junlas.components.scrollpanel
 {
+	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Shape;
 	import flash.display.Sprite;
@@ -83,7 +84,30 @@ package junlas.components.scrollpanel
 		///////////////////////////////////
 		// public methods
 		///////////////////////////////////
+		public override function addChild(child:DisplayObject):DisplayObject
+		{
+			var contentNum:int = content.numChildren;
+			if(contentNum > _visibleConfig.number_panel_content_item){
+				var autoDesItem:DisplayObject = removeChild(content.getChildAt(0));
+				//超过锁定数目，自动移除的条目，去检查destroy()//
+				if(autoDesItem.hasOwnProperty("destroy") && autoDesItem["destroy"] is Function){
+					autoDesItem["destroy"]();
+				}
+			}
+			return super.addChild(child);
+		}
 		
+		public override function addChildFromDist(child:DisplayObject,distFrom:Number):DisplayObject{
+			var contentNum:int = content.numChildren;
+			if(contentNum > _visibleConfig.number_panel_content_item){
+				var autoDesItem:DisplayObject = removeChild(content.getChildAt(0));
+				//超过锁定数目，自动移除的条目，去检查destroy()//
+				if(autoDesItem.hasOwnProperty("destroy") && autoDesItem["destroy"] is Function){
+					autoDesItem["destroy"]();
+				}
+			}
+			return super.addChildFromDist(child,distFrom);
+		}
 		/**
 		 * Draws the visual ui of the component.
 		 */

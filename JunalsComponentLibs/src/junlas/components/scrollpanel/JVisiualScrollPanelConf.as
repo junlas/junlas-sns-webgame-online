@@ -59,6 +59,10 @@ package junlas.components.scrollpanel{
 		 * 滚动条组件滑动块(底部)名称
 		 */
 		public var slider_bottom_btn_handler:String = "slider_bottom_handler";
+		/**
+		 * 内容面板最大显示的条目数,超过这个条目数，则删除上面多余的部分
+		 */
+		public var number_panel_content_item:int = int.MAX_VALUE;
 		
 	}
 }
