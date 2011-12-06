@@ -1,7 +1,7 @@
 package junlas.textengine{
 	import flash.errors.IllegalOperationError;
+	import flash.text.engine.ContentElement;
 	import flash.text.engine.ElementFormat;
-	import flash.text.engine.TextElement;
 	import flash.utils.getQualifiedClassName;
 
 	/**
@@ -18,7 +18,7 @@ package junlas.textengine{
 			return null;
 		}
 		
-		public function getTextElement():TextElement{
+		public function getTextElement():ContentElement{
 			return null;
 		}
 	}

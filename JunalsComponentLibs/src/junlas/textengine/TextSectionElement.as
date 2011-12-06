@@ -3,6 +3,7 @@ package junlas.textengine{
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
+	import flash.text.engine.ContentElement;
 	import flash.text.engine.ElementFormat;
 	import flash.text.engine.TextElement;
 
@@ -69,7 +70,7 @@ package junlas.textengine{
 			return _elementFormat;
 		}
 		
-		override public function getTextElement():TextElement{
+		override public function getTextElement():ContentElement{
 			return _textElement;
 		}
 

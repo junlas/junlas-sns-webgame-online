@@ -4,6 +4,8 @@ package junlas.textengine{
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
+	import flash.text.engine.ContentElement;
+	import flash.text.engine.ElementFormat;
 	import flash.text.engine.GraphicElement;
 
 	/**
@@ -11,19 +13,26 @@ package junlas.textengine{
 	 */
 	public class GraphicSectionElement extends SectionElement implements IEventDispatcher {
 		private var _graphic:DisplayObject;
+		private var _elementFormat:ElementFormat;
 		private var _hasEvent:Boolean;
-		private var _eventDispatcher:EventDispatcher;
 		private var _graphicElement:GraphicElement;
+		private var _eventDispatcher:EventDispatcher;
+		//
+		private var _graphicWidth:Number;
+		private var _graphicHeight:Number;
 		
 		
-		public function GraphicSectionElement(graphic:DisplayObject,hasEvent:Boolean = false) {
+		public function GraphicSectionElement(graphic:DisplayObject,graphicWidth:Number,graphicHeight:Number,eleFormat:ElementFormat,hasEvent:Boolean = false) {
 			_graphic = graphic;
+			_graphicWidth = graphicWidth;
+			_graphicHeight = graphicHeight;
+			_elementFormat = eleFormat;
 			_hasEvent = hasEvent;
 			initGraphicElement();
 		}
 		
 		private function initGraphicElement():void {
-			_graphicElement = new GraphicElement(_graphic);
+			_graphicElement = new GraphicElement(_graphic,_graphicWidth,_graphicHeight,_elementFormat);
 			if(_hasEvent) {
 				_eventDispatcher = new EventDispatcher();
 				_graphicElement.eventMirror = _eventDispatcher;
@@ -43,11 +52,11 @@ package junlas.textengine{
 			}
 		}
 		
-		public function dispatchEvent(event:Event):Boolean{
+		public function dispatchEvent(event:Event):Boolean {
 			return _eventDispatcher.dispatchEvent(event);
 		}
 		
-		public function hasEventListener(type:String):Boolean{
+		public function hasEventListener(type:String):Boolean {
 			return _eventDispatcher.hasEventListener(type);
 		}
 		
@@ -59,13 +68,13 @@ package junlas.textengine{
 			return _eventDispatcher.willTrigger(type);
 		}
 		
-		/*override public function getElementFormat():ElementFormat{
+		override public function getElementFormat():ElementFormat{
 			return _elementFormat;
 		}
 		
-		override public function getTextElement():TextElement{
-			return _textElement;
-		}*/
+		override public function getTextElement():ContentElement{
+			return _graphicElement;
+		}
 		
 	}
 }
