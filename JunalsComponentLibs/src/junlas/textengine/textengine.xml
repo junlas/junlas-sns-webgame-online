@@ -1,8 +1,0 @@
-<textengine isHorizontal="true">
-	<contentEle>
-		<!--定义是否是TextElement,或者是GraphicElement,有熟悉@isTextLine?TextElement:GraphicElement做区分-->
-		<element isTextLine="true" text="">
-			<eleForamt />
-		</element>
-	</contentEle>
-</textengine>
