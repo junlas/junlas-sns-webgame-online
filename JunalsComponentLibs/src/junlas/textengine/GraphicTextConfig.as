@@ -14,7 +14,7 @@ package junlas.textengine{
 		/**
 		 * TextBlock文本块的宽度
 		 */
-		public var engine_width:Number = 200;
+		public var engine_width:Number = 400;
 		/**
 		 * 行间距
 		 */

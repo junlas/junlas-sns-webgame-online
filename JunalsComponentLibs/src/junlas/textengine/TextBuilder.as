@@ -112,11 +112,15 @@ package junlas.textengine{
 		
 		//////////////////////////销毁处理////////////////////////////
 		public function destroyGraphicText():void{
-		
+			while(_graphicTextInfoVect.length){
+				_graphicTextInfoVect.pop().destroy();
+			}
 		}
 		
 		public function destroyGenerateText():void{
-		
+			while(_generateTextInfoVect.length){
+				_generateTextInfoVect.pop().destroy();
+			}
 		}
 		
 		public function destroy():void{

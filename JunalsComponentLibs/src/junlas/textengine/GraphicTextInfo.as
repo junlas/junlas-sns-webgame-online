@@ -1,4 +1,5 @@
 package junlas.textengine{
+	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -9,6 +10,8 @@ package junlas.textengine{
 	import flash.text.engine.TextBlock;
 	import flash.text.engine.TextLine;
 	import flash.text.engine.TextRotation;
+	import flash.ui.Mouse;
+	import flash.ui.MouseCursor;
 
 	/**
 	 *@author lvjun01
@@ -19,7 +22,6 @@ package junlas.textengine{
 		
 		private var _graphicTextContainer:Sprite;
 		private var _textLineVect:Vector.<TextLine>;
-		private var _generateTextContainer:Sprite;
 		
 		private var _allText:String;
 		private var _selectable:Boolean = false;
@@ -67,24 +69,50 @@ package junlas.textengine{
 		}
 		
 		private function invalidate():void {
+			_eventDispatcher.addEventListener(MouseEvent.MOUSE_OVER,onMouseOver);
+			_eventDispatcher.addEventListener(MouseEvent.MOUSE_OUT,onMouseOut);
 			_eventDispatcher.addEventListener(MouseEvent.MOUSE_DOWN,onMouseDown);
 			_eventDispatcher.addEventListener(MouseEvent.MOUSE_UP,onMouseUp);
 			_graphicTextContainer.addEventListener(Event.COPY,onCopy);
 		}
 		
 		private function disvalidate():void {
+			_eventDispatcher.removeEventListener(MouseEvent.MOUSE_OVER,onMouseOver);
+			_eventDispatcher.removeEventListener(MouseEvent.MOUSE_OUT,onMouseOut);
 			_eventDispatcher.removeEventListener(MouseEvent.MOUSE_DOWN,onMouseDown);
 			_eventDispatcher.removeEventListener(MouseEvent.MOUSE_UP,onMouseUp);
 			_eventDispatcher.removeEventListener(MouseEvent.MOUSE_MOVE,onMouseMove);
 			_graphicTextContainer.removeEventListener(Event.COPY,onCopy);
 		}
 		
+		protected function onMouseOut(event:MouseEvent):void {
+			Mouse.cursor = MouseCursor.ARROW;
+		}
+		
+		protected function onMouseOver(event:MouseEvent):void {
+			Mouse.cursor = MouseCursor.IBEAM;
+		}
+		
 		/**
-		 * 
+		 * copy操作
 		 */
 		protected function onCopy(event:Event):void {
 			if(!_startIndex || !_endIndex)return;
 			var isWellSort:Boolean = (_endIndex.rowIndex >= _startIndex.rowIndex);
+			var tempHasGraphicItemIndexVect:Vector.<int> = new Vector.<int>();
+			var rowIndex:int = -1;
+			var tl:TextLine = _textBlock.firstLine;
+			while(tl != null){
+				++rowIndex;
+				var index:int = -1;
+				while(++index < tl.atomCount){
+					var disObj:DisplayObject = tl.getAtomGraphic(index);
+					if(disObj){
+						tempHasGraphicItemIndexVect.push(tl.getAtomTextBlockBeginIndex(index));
+					}
+				}
+				tl = tl.nextLine;
+			}
 			var start:int;
 			var end:int;
 			if(isWellSort){
@@ -94,8 +122,33 @@ package junlas.textengine{
 				start = _startIndex.getTextBlockIndex() + 1;
 				end = _endIndex.getTextBlockIndex();
 			}
-			var copyStr:String = _allText.substring(start, end);
+			//var indexArr:Array = checkSubStringIndex(tempHasGraphicItemIndexVect,start,end,isWellSort);
+			//如果选中区域中间夹有graphic，索引值将发生变化，暂留
+			var copyStr:String = _allText.substring(start,end);
 			System.setClipboard(copyStr);
+		}
+		
+		private function checkSubStringIndex(selectableItemVect:Vector.<int>,start:int,end:int,isWellSort:Boolean):Array{
+			for each(var graphicItemIndex:int in selectableItemVect){
+				trace(graphicItemIndex);
+				if(isWellSort){
+					if(graphicItemIndex > start){
+						++start;
+					}
+					if(graphicItemIndex <= end){
+						++end;
+					}
+				}else{
+					if(graphicItemIndex <= start){
+						++start;
+					}
+					if(graphicItemIndex > end){
+						++end;
+					}
+				}
+				
+			}
+			return [start,end];
 		}
 		
 		protected function onMouseDown(event:MouseEvent):void {
@@ -123,6 +176,11 @@ package junlas.textengine{
 		}
 		
 		protected function onMouseMove(event:MouseEvent):void {
+			//鼠标一旦离开区域，做mouse_up处理
+			if(!event.buttonDown){
+				onMouseUp(null);
+				return;
+			}
 			var rowIndex:int = -1;
 			var colIndex:int;
 			var tl:TextLine = _textBlock.firstLine;
@@ -260,6 +318,20 @@ package junlas.textengine{
 		
 		public function get selectColor():uint{
 			return _selectColor;
+		}
+		
+		/**
+		 * 销毁
+		 */
+		public function destroy():void {
+			clearGraphic();
+			disvalidate();
+			while(_graphicTextContainer.numChildren){
+				_graphicTextContainer.removeChildAt(0);
+			}
+			if(_graphicTextContainer.parent){
+				_graphicTextContainer.parent.removeChild(_graphicTextContainer);
+			}
 		}
 	}
 }
