@@ -73,6 +73,14 @@ package junlas.textengine{
 		override public function getTextElement():ContentElement{
 			return _textElement;
 		}
+		
+		/**********************************************************
+		 **** getter and setter ****
+		**********************************************************/
+		public function get text():String {
+			return _text;
+		}
+
 
 	}
 }

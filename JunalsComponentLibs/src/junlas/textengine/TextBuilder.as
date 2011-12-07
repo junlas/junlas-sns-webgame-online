@@ -19,55 +19,23 @@ package junlas.textengine{
 	 * 文本创建器
 	 *@author lvjun01
 	 */
-	public class TextBuilder implements IEventDispatcher{
+	public class TextBuilder{
 		private var _config:GraphicTextConfig;
-		private var _textBlock:TextBlock;
-		private var _eventDispatcher:EventDispatcher;
-		
-		private var _graphicTextContainer:Sprite;
-		private var _textLineVect:Vector.<TextLine>;
-		private var _generateTextContainer:Sprite;
+		private var _graphicTextInfoVect:Vector.<GraphicTextInfo>;
+		private var _generateTextInfoVect:Vector.<GenerateTextInfo>;
 		
 		public function TextBuilder(config:GraphicTextConfig = null) {
 			_config = config;
-			initBuilder();
-		}
-		
-		private function initBuilder():void {
-			if(_config){
-				_textBlock = new TextBlock();
-				switch(_config.engine_rotation){
-					case "0":
-						_textBlock.lineRotation = TextRotation.ROTATE_0;
-						break;
-					case "90":
-						_textBlock.lineRotation = TextRotation.ROTATE_90;
-						break;
-					case "180":
-						_textBlock.lineRotation = TextRotation.ROTATE_180;
-						break;
-					case "270":
-						_textBlock.lineRotation = TextRotation.ROTATE_270;
-						break;
-					default:
-						_textBlock.lineRotation = TextRotation.AUTO;
-				}
-				
-				///eventMirror///
-				_eventDispatcher = new EventDispatcher();
-				_graphicTextContainer = new Sprite();
-				_textLineVect = new Vector.<TextLine>();
-			}else{
-				_generateTextContainer = new Sprite();
-			}
+			_graphicTextInfoVect = new Vector.<GraphicTextInfo>();
+			_generateTextInfoVect = new Vector.<GenerateTextInfo>();
 		}
 		
 		/**
 		 * 创建图文并茂的排版显示对象
 		 */
-		public function createGraphicText(sections:Vector.<SectionElement>):Sprite{
-			_graphicTextContainer.x = _config.engine_x;
-			_graphicTextContainer.y = _config.engine_y;
+		public function createGraphicText(sections:Vector.<SectionElement>):GraphicTextInfo{
+			var graphicInfo:GraphicTextInfo = new GraphicTextInfo(_config);
+			_graphicTextInfoVect.push(graphicInfo);
 			
 			var groupVector:Vector.<ContentElement> = new Vector.<ContentElement>();
 			for each(var sectionEle:SectionElement in sections){
@@ -76,32 +44,48 @@ package junlas.textengine{
 					if(GraphicElement(contentEle).elementWidth > _config.engine_width){
 						throw new IllegalOperationError("GraphicWidth显示宽带大于EngineWidth,显示可能异常");
 					}
+				}else{
+					graphicInfo.linkAllText(TextElement(contentEle).text);
 				}
 				groupVector.push(contentEle);
 			}
 			var groupElement:GroupElement = new GroupElement(groupVector);
-			groupElement.eventMirror = _eventDispatcher;
-			_textBlock.content = groupElement;
+			groupElement.eventMirror = graphicInfo.getEventDispatcher();
+			var graphicInfoTextBlock:TextBlock = graphicInfo.getTextBlock();
+			graphicInfoTextBlock.content = groupElement;
 			
 			var textLine:TextLine = null;
+			var xPos:Number = 0;
 			var yPos:Number = 0;
 			var isFirstRow:Boolean = true;
 			while(true){
-				textLine = _textBlock.createTextLine(textLine,_config.engine_width);
+				textLine = graphicInfoTextBlock.createTextLine(textLine,_config.engine_width);
 				if(!textLine) break;
-				yPos += textLine.y + _config.engine_line_spacing;
-				if(isFirstRow) {yPos = textLine.height;isFirstRow = false;}
-				textLine.y = yPos;
-				_graphicTextContainer.addChild(textLine);
-				_textLineVect.push(textLine);
+				switch(graphicInfoTextBlock.lineRotation){
+					case TextRotation.ROTATE_90:
+					case TextRotation.ROTATE_270:
+						xPos += textLine.x + _config.engine_line_spacing;
+						if(isFirstRow) {xPos = textLine.width;isFirstRow = false;}
+						textLine.x = xPos;
+						break;
+					default:
+						yPos += textLine.y + _config.engine_line_spacing;
+						if(isFirstRow) {yPos = textLine.height;isFirstRow = false;}
+						textLine.y = yPos;
+				}
+				graphicInfo.getGraphicTextContainer().addChild(textLine);
+				graphicInfo.getTextLineVect().push(textLine);
 			}
-			return _graphicTextContainer;
+			return graphicInfo;
 		}
 		
 		/**
 		 * 创建普通排版的文本显示对象
 		 */
-		public function createGenerateText(str:String,textWidth:Number,lineSpace:Number,fontSize:int,fontColor:uint,fontAlpha:Number,fontName:String,isDevice:Boolean = true):Sprite{
+		public function createGenerateText(str:String,textWidth:Number,lineSpace:Number,fontSize:int=12,fontColor:uint=0xffffff,fontAlpha:Number=1.0,fontName:String="宋体",isDevice:Boolean = true):GenerateTextInfo{
+			var generateInfo:GenerateTextInfo = new GenerateTextInfo();
+			_generateTextInfoVect.push(generateInfo);
+			
 			var fontDesc:FontDescription = new FontDescription(fontName);
 			if(isDevice){
 				fontDesc.fontLookup = FontLookup.DEVICE;
@@ -121,43 +105,9 @@ package junlas.textengine{
 				yPos += textLine.y +lineSpace;
 				if(isFirstRow) {yPos = textLine.height;isFirstRow = false;}
 				textLine.y = yPos;
-				_generateTextContainer.addChild(textLine);
+				generateInfo.getGenerateTextContainer().addChild(textLine);
 			}
-			//关闭鼠标
-			_generateTextContainer.mouseChildren = _generateTextContainer.mouseEnabled = false;
-			return _generateTextContainer;
-		}
-		
-		/**************************************************************
-		 *************************************************************
-		 * 接口实现
-		 *************************************************************
-		 **************************************************************/
-		public function addEventListener(type:String, listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void{
-			_eventDispatcher.addEventListener(type,listener,useCapture,priority,useWeakReference);
-		}
-		
-		public function dispatchEvent(event:Event):Boolean{
-			return _eventDispatcher.dispatchEvent(event);
-		}
-		
-		public function hasEventListener(type:String):Boolean{
-			return _eventDispatcher.hasEventListener(type);
-		}
-		
-		public function removeEventListener(type:String, listener:Function, useCapture:Boolean = false):void{
-			_eventDispatcher.removeEventListener(type,listener,useCapture);
-		}
-		
-		public function willTrigger(type:String):Boolean{
-			return _eventDispatcher.willTrigger(type);
-		}
-		
-		/**
-		 * 获取textLineVector数据
-		 */
-		public function getTextLineVect():Vector.<TextLine> {
-			return _textLineVect;
+			return generateInfo;
 		}
 		
 		//////////////////////////销毁处理////////////////////////////
