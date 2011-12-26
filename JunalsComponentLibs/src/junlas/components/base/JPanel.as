@@ -96,7 +96,9 @@ package junlas.components.base
 		}
 		
 		/**
-		 * 清空scrollPanel内容，针对每一个Item，都会去查找是否有destroy方法，如果则回调
+		 * @param isDestroy
+		 * @param funcDestroyName
+		 * 清空scrollPanel内容，针对每一个Item，都会去查找是否有destroy方法，如果isDestroy==true且有@funcDestroyName则回调
 		 */
 		public function removeAll(isDestroy:Boolean = false,funcDestroyName:String = "destroy"):Array {
 			var contentSet:Array = [];
@@ -110,6 +112,20 @@ package junlas.components.base
 				}
 			}
 			return contentSet;
+		}
+		
+		/**
+		 * @return Array
+		 * 获取scrollPanel里所有的Item对象的数组
+		 */
+		public function getAllChild():Array{
+			var allChildArr:Array = [];
+			var numChild:int = content.numChildren;
+			for (var i:int = 0; i < numChild; i++) {
+				var child:DisplayObject = content.getChildAt(i);
+				allChildArr.push(child);
+			}
+			return allChildArr;
 		}
 		
 		/**
