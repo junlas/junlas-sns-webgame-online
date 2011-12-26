@@ -82,6 +82,10 @@ package junlas.components.base
 			return child;
 		}
 		
+		/**
+		 * @param child
+		 * 清空scrollPanel内容中指定的一个Child，都会去查找是否有destroy方法，如果则回调
+		 */
 		public override function removeChild(child:DisplayObject):DisplayObject{
 			var currIndex:int = content.getChildIndex(child);
 			var dist:Number = getNextChildDistance(child);
@@ -91,6 +95,9 @@ package junlas.components.base
 			return child;
 		}
 		
+		/**
+		 * 清空scrollPanel内容，针对每一个Item，都会去查找是否有destroy方法，如果则回调
+		 */
 		public function removeAll(isDestroy:Boolean = false,funcDestroyName:String = "destroy"):Array {
 			var contentSet:Array = [];
 			while(content.numChildren){
@@ -116,11 +123,17 @@ package junlas.components.base
 			
 		}
 		
+		/**
+		 * 原生的removeChild方法
+		 */
 		public function removeRawChild(child:DisplayObject):DisplayObject{
 			super.removeChild(child);
 			return child;
 		}
 		
+		/**
+		 * 原生的addChild方法
+		 */
 		public function addRawChild(child:DisplayObject):DisplayObject
 		{
 			super.addChild(child);
