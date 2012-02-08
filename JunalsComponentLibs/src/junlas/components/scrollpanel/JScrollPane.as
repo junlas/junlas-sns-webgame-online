@@ -84,6 +84,10 @@ package junlas.components.scrollpanel
 		///////////////////////////////////
 		// public methods
 		///////////////////////////////////
+		/**
+		 * 增加内容<br>
+		 * 超过锁定数目，自动移除的条目，去检查destroy()
+		 */
 		public override function addChild(child:DisplayObject):DisplayObject
 		{
 			var contentNum:int = content.numChildren;
@@ -97,6 +101,10 @@ package junlas.components.scrollpanel
 			return super.addChild(child);
 		}
 		
+		/**
+		 * 增加内容，同时距离上一个Item的距离<br/>
+		 * 超过锁定数目，自动移除的条目，去检查destroy()
+		 */
 		public override function addChildFromDist(child:DisplayObject,distFrom:Number):DisplayObject{
 			var contentNum:int = content.numChildren;
 			if(contentNum > _visibleConfig.number_panel_content_item){
@@ -108,6 +116,18 @@ package junlas.components.scrollpanel
 			}
 			return super.addChildFromDist(child,distFrom);
 		}
+		
+		/**
+		 * @param isDestroy
+		 * @param funcDestroyName
+		 * 清空scrollPanel内容，针对每一个Item，都会去查找是否有destroy方法，如果isDestroy==true且有@funcDestroyName则回调
+		 */
+		override public function removeAll(isDestroy:Boolean = false,funcDestroyName:String = "destroy"):Array {
+			_vScrollbar.value = 0;
+			_hScrollbar.value = 0;
+			return super.removeAll(isDestroy,funcDestroyName);
+		}
+		
 		/**
 		 * Draws the visual ui of the component.
 		 */
