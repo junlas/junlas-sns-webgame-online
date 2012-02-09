@@ -5,6 +5,7 @@ package junlas.debug{
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.display.Stage;
+	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.text.TextFormat;
@@ -23,6 +24,8 @@ package junlas.debug{
 		private var _posY:Number=0;
 		private var _posWidth:Number = 0;
 		private var _posHeight:Number = 0;
+		//
+		private var _isDrag:Boolean = false;
 		
 		public function DebugConsole()
 		{
@@ -119,7 +122,29 @@ package junlas.debug{
 			_debugTextArea.btn_warn.mouseChildren = false;
 			_debugTextArea.btn_warn.buttonMode = true;
 			_debugTextArea.btn_warn.addEventListener(MouseEvent.CLICK,onClick);
-			_debugTextArea.txt_ver.text = "ver 1.1";
+			_debugTextArea.txt_ver.text = "VER_1.3";
+			_debugTextArea.txt_ver.addEventListener(MouseEvent.MOUSE_DOWN,onMove);
+			_debugTextArea.txt_ver.addEventListener(MouseEvent.MOUSE_MOVE,onMove);
+			_debugTextArea.txt_ver.addEventListener(MouseEvent.MOUSE_UP,onMove);
+			_stage.addEventListener(Event.MOUSE_LEAVE,onMove);
+		}
+		
+		protected function onMove(event:Event):void {
+			switch(event.type){
+				case MouseEvent.MOUSE_DOWN:
+					_isDrag = true;
+					break;
+				case MouseEvent.MOUSE_MOVE:
+					if(_isDrag){
+						_debugTextArea.startDrag();
+					}
+					break;
+				case MouseEvent.MOUSE_UP:
+				case Event.MOUSE_LEAVE:
+					_isDrag = false;
+					_debugTextArea.stopDrag();
+					break;
+			}
 		}
 		
 		protected function onClick(event:MouseEvent):void
@@ -160,6 +185,8 @@ package junlas.debug{
 				if(_stage.contains(_debugTextArea)){
 					_stage.removeChild(_debugTextArea);
 				}else{
+					_debugTextArea.x = 0;
+					_debugTextArea.y = 0;
 					_stage.addChild(_debugTextArea);
 				}
 			}
