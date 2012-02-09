@@ -11,6 +11,8 @@ package junlas.debug{
 	import flash.text.TextFormat;
 	import flash.ui.Keyboard;
 	
+	import junlas.keyboard.Constants;
+	
 	public class DebugConsole{
 		private var _debugTextArea:DebugTextArea;
 		private var _stage:Stage;
@@ -181,7 +183,7 @@ package junlas.debug{
 		}
 		
 		private function onKeyDown(event:KeyboardEvent):void{
-			if(event.keyCode == 190){
+			if(event.keyCode == 190 || event.keyCode == Constants.KEY_P){
 				if(_stage.contains(_debugTextArea)){
 					_stage.removeChild(_debugTextArea);
 				}else{
