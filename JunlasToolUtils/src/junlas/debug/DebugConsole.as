@@ -181,7 +181,7 @@ package junlas.debug{
 		}
 		
 		private function onKeyDown(event:KeyboardEvent):void{
-			if(event.keyCode == 110){
+			if(event.keyCode == 190){
 				if(_stage.contains(_debugTextArea)){
 					_stage.removeChild(_debugTextArea);
 				}else{
