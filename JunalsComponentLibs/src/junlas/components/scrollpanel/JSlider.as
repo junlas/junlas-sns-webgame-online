@@ -80,6 +80,11 @@ package junlas.components.scrollpanel
 			}else{
 				_back = new Sprite();
 				_back.filters = [getShadow(2, true)];
+				if(_orientation == VERTICAL){
+					_back.visible = _visibleConfig.slider_back_visible;
+				}else{
+					_back.visible = _visibleConfig.slider_botton_back_visible;
+				}
 			}
 			addChild(_back);
 			
@@ -101,6 +106,11 @@ package junlas.components.scrollpanel
 				_handle.addEventListener(MouseEvent.MOUSE_DOWN, onDrag);
 				_handle.buttonMode = true;
 				_handle.useHandCursor = true;
+				if(_orientation == VERTICAL){
+					_handle.visible = _visibleConfig.slider_btn_handler_visible;
+				}else{
+					_handle.visible = _visibleConfig.slider_botton_btn_handler_visible;
+				}
 			}
 			addChild(_handle);
 		}
