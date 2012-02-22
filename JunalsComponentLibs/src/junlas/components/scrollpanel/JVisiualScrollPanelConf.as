@@ -64,5 +64,9 @@ package junlas.components.scrollpanel{
 		 */
 		public var number_panel_content_item:int = int.MAX_VALUE;
 		
+		public var button_up_left_visible:Boolean = true;
+		
+		public var button_down_right_visible:Boolean = true;
+		
 	}
 }

@@ -104,6 +104,11 @@ package junlas.components.scrollpanel
 				_downButton.addChild(downArrow);
 			}
 			
+			_upButtonSprite && (_upButtonSprite.visible = _visibleConfig.button_up_left_visible);
+			_upButton && (_upButton.visible = _visibleConfig.button_up_left_visible);
+			_downButtonSprite && (_downButtonSprite.visible = _visibleConfig.button_down_right_visible);
+			_downButton && (_downButton.visible = _visibleConfig.button_down_right_visible);
+			
 			if(_visibleShow)return;
 			if(_orientation == JSlider.VERTICAL)
 			{
