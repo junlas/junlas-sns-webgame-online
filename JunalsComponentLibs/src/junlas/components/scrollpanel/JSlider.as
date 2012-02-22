@@ -71,8 +71,10 @@ package junlas.components.scrollpanel
 			if(_visibleShow && ((_orientation == VERTICAL && _visibleShow.hasOwnProperty(_visibleConfig.slider_back))||(_orientation != VERTICAL && _visibleShow.hasOwnProperty(_visibleConfig.slider_bottom_back)))){
 				if(_orientation == VERTICAL){
 					_back = _visibleShow[_visibleConfig.slider_back];
+					_back && (_back.visible = _visibleConfig.slider_back_visible);
 				}else{
 					_back = _visibleShow[_visibleConfig.slider_bottom_back];
+					_back && (_back.visible = _visibleConfig.slider_botton_back_visible);
 				}
 				_back.x = _back.y = 0;
 			}else{
@@ -84,8 +86,10 @@ package junlas.components.scrollpanel
 			if(_visibleShow && ((_orientation == VERTICAL && _visibleShow.hasOwnProperty(_visibleConfig.slider_btn_handler))||(_orientation != VERTICAL && _visibleShow.hasOwnProperty(_visibleConfig.slider_bottom_btn_handler)))){
 				if(_orientation == VERTICAL){
 					_handle = _visibleShow[_visibleConfig.slider_btn_handler];
+					_handle && (_handle.visible = _visibleConfig.slider_btn_handler_visible);
 				}else{
 					_handle = _visibleShow[_visibleConfig.slider_bottom_btn_handler];
+					_handle && (_handle.visible = _visibleConfig.slider_botton_btn_handler_visible);
 				}
 				_handle.addEventListener(MouseEvent.MOUSE_DOWN, onDrag);
 				_handle.buttonMode = true;

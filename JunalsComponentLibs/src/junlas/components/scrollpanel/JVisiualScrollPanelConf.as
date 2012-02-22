@@ -68,5 +68,13 @@ package junlas.components.scrollpanel{
 		
 		public var button_down_right_visible:Boolean = true;
 		
+		public var slider_btn_handler_visible:Boolean = true;
+		
+		public var slider_botton_btn_handler_visible:Boolean = true;
+		
+		public var slider_back_visible:Boolean = true;
+		
+		public var slider_botton_back_visible:Boolean = true;
+		
 	}
 }
