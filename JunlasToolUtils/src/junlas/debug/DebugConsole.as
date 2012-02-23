@@ -48,7 +48,7 @@ package junlas.debug{
 		public function Trace(...txt):void{
 			if(!_debugTextArea)return;
 			for each(var t:Object in txt){
-				_debugTextArea.txt_area.appendText(t.toString());
+				_debugTextArea.txt_area.appendText(t?t.toString():null);
 				_debugTextArea.txt_area.appendText(" ");
 			}
 			_debugTextArea.txt_area.appendText("\n");
@@ -58,9 +58,9 @@ package junlas.debug{
 		public function Info(...txt):void{
 			if(!_debugTextArea)return;
 			for each(var t:Object in txt){
-				_infoConsole.appendText(t.toString());
+				_infoConsole.appendText(t?t.toString():null);
 				_infoConsole.appendText(" ");
-				_allConsole.appendText(t.toString());
+				_allConsole.appendText(t?t.toString():null);
 				_allConsole.appendText(" ");
 			}
 			_infoConsole.appendText("\n");
@@ -72,9 +72,9 @@ package junlas.debug{
 		public function Warn(...txt):void{
 			if(!_debugTextArea)return;
 			for each(var t:Object in txt){
-				_warnConsole.appendText(t.toString());
+				_warnConsole.appendText(t?t.toString():null);
 				_warnConsole.appendText(" ");
-				_allConsole.appendText(t.toString());
+				_allConsole.appendText(t?t.toString():null);
 				_allConsole.appendText(" ");
 			}
 			_warnConsole.appendText("\n");
