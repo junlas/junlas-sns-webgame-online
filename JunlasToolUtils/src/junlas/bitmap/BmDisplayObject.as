@@ -35,11 +35,11 @@ package junlas.bitmap{
 			var bmDisplayObject:BmDisplayObject = new BmDisplayObject(null);
 			bmDisplayObject._originalMc = _originalMc;
 			bmDisplayObject.bitmapData = _bmd;
-			bmDisplayObject.transform.matrix = _mat.clone();
+			bmDisplayObject.transform.matrix = _mat;//.clone();
 			return bmDisplayObject;
 		}
 		
-		public function destroy():void{
+		public function destroy():void {
 			_originalMc = null;
 			_bmd.dispose();
 			_mat = null;
