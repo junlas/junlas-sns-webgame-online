@@ -276,6 +276,14 @@ package junlas.components.scrollpanel
 			_autoHScrollMaxValue = value;
 		}
 		
+		public function get vScrollbar():JVScrollBar {
+			return _vScrollbar;
+		}
+		
+		public function get hScrollbar():JHScrollBar {
+			return _hScrollbar;
+		}
+		
 		
 		//////////////////////////////////////////
 		//  dispose
